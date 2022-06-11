@@ -65,6 +65,21 @@ func (mr *MockPlayerControllerMockRecorder) Get(playerId interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockPlayerController)(nil).Get), playerId)
 }
 
+// List mocks base method.
+func (m *MockPlayerController) List(leaderboardId uuid.UUID, limit, offset int) ([]*player.Player, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", leaderboardId, limit, offset)
+	ret0, _ := ret[0].([]*player.Player)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockPlayerControllerMockRecorder) List(leaderboardId, limit, offset interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockPlayerController)(nil).List), leaderboardId, limit, offset)
+}
+
 // Remove mocks base method.
 func (m *MockPlayerController) Remove(playerId uuid.UUID) error {
 	m.ctrl.T.Helper()
@@ -77,20 +92,6 @@ func (m *MockPlayerController) Remove(playerId uuid.UUID) error {
 func (mr *MockPlayerControllerMockRecorder) Remove(playerId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockPlayerController)(nil).Remove), playerId)
-}
-
-// RemoveAll mocks base method.
-func (m *MockPlayerController) RemoveAll(leaderboardId uuid.UUID) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RemoveAll", leaderboardId)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// RemoveAll indicates an expected call of RemoveAll.
-func (mr *MockPlayerControllerMockRecorder) RemoveAll(leaderboardId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveAll", reflect.TypeOf((*MockPlayerController)(nil).RemoveAll), leaderboardId)
 }
 
 // UpdateScore mocks base method.

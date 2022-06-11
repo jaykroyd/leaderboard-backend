@@ -10,6 +10,7 @@ import (
 
 type PlayerController interface {
 	Get(playerId uuid.UUID) (*player.Player, error)
+	List(leaderboardId uuid.UUID, limit int, offset int) ([]*player.Player, error)
 	UpdateScore(playerId uuid.UUID, amount int) (int, error)
 	Create(leaderboardId uuid.UUID) (*player.Player, error)
 	Remove(playerId uuid.UUID) error
@@ -27,6 +28,10 @@ func NewController(dal player.PlayerDAL) *Controller {
 
 func (c *Controller) Get(playerId uuid.UUID) (*player.Player, error) {
 	return c.dal.GetByPK(playerId)
+}
+
+func (c *Controller) List(leaderboardId uuid.UUID, limit int, offset int) ([]*player.Player, error) {
+	return c.dal.List(leaderboardId, limit, offset)
 }
 
 func (c *Controller) UpdateScore(playerId uuid.UUID, amount int) (int, error) {

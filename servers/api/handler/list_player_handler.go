@@ -10,18 +10,19 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type CreatePlayerHandler struct {
+type ListPlayerHandler struct {
 	logger     logrus.FieldLogger
 	decoder    app.Decoder
 	controller player.PlayerController
 }
 
-type CreatePlayerRequest struct {
+type ListPlayerRequest struct {
 	LeaderboardID uuid.UUID `json:"leaderboard_id"`
+	Limit         int       `json:"limit"`
 }
 
-func NewCreatePlayerHandler(logger logrus.FieldLogger, decoder app.Decoder, controller player.PlayerController) *CreatePlayerHandler {
-	h := &CreatePlayerHandler{
+func NewListPlayerHandler(logger logrus.FieldLogger, decoder app.Decoder, controller player.PlayerController) *ListPlayerHandler {
+	h := &ListPlayerHandler{
 		logger:     logger,
 		decoder:    decoder,
 		controller: controller,
@@ -36,27 +37,27 @@ func NewCreatePlayerHandler(logger logrus.FieldLogger, decoder app.Decoder, cont
 	return h
 }
 
-func (h *CreatePlayerHandler) GetMethod() string {
-	return http.MethodPost
+func (h *ListPlayerHandler) GetMethod() string {
+	return http.MethodGet
 }
 
-func (h *CreatePlayerHandler) GetPath() string {
-	return "/player"
+func (h *ListPlayerHandler) GetPath() string {
+	return "/player/list"
 }
 
-func (h *CreatePlayerHandler) Handle(r *http.Request) app.Response {
-	req := CreatePlayerRequest{}
+func (h *ListPlayerHandler) Handle(r *http.Request) app.Response {
+	req := ListPlayerRequest{}
 	if err := h.decoder.DecodeRequest(r, &req); err != nil {
 		h.logger.WithError(err).Error("error decoding request")
 		return app.NewBadRequest(err)
 	}
 
-	h.logger.WithFields(logrus.Fields{"request": req}).Info("creating new player")
-	player, err := h.controller.Create(req.LeaderboardID)
+	h.logger.WithFields(logrus.Fields{"request": req}).Info("getting player")
+	players, err := h.controller.List(req.LeaderboardID, req.Limit, 0)
 	if err != nil {
 		return app.NewInternalServerError(err)
 	}
 
-	h.logger.Info("new player created successfully")
-	return app.NewStatusOK(player)
+	h.logger.WithFields(logrus.Fields{"players": players}).Info("successfully retrieved player")
+	return app.NewStatusOK(players)
 }

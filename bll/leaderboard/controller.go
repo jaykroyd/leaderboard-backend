@@ -6,7 +6,7 @@ import (
 )
 
 type LeaderboardController interface {
-	List() ([]*leaderboard.Leaderboard, error)
+	List(limit int, offset int) ([]*leaderboard.Leaderboard, error)
 	Get(leaderboardId uuid.UUID) (*leaderboard.Leaderboard, error)
 	Create() (*leaderboard.Leaderboard, error)
 	Remove(leaderboardId uuid.UUID) error
@@ -26,8 +26,8 @@ func (c *Controller) Get(leaderboardId uuid.UUID) (*leaderboard.Leaderboard, err
 	return c.dal.GetByPK(leaderboardId)
 }
 
-func (c *Controller) List() ([]*leaderboard.Leaderboard, error) {
-	return c.dal.List()
+func (c *Controller) List(limit int, offset int) ([]*leaderboard.Leaderboard, error) {
+	return c.dal.List(limit, offset)
 }
 
 func (c *Controller) Create() (*leaderboard.Leaderboard, error) {

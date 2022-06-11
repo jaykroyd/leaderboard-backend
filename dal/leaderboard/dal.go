@@ -10,7 +10,7 @@ import (
 
 type LeaderboardDAL interface {
 	GetByPK(id uuid.UUID) (*Leaderboard, error)
-	List() ([]*Leaderboard, error)
+	List(limit int, offset int) ([]*Leaderboard, error)
 	Create(leaderboard *Leaderboard) error
 	Delete(leaderboard *Leaderboard) error
 }
@@ -36,9 +36,11 @@ func (d *DAL) GetByPK(id uuid.UUID) (*Leaderboard, error) {
 	return leaderboard, nil
 }
 
-func (d *DAL) List() ([]*Leaderboard, error) {
+func (d *DAL) List(limit int, offset int) ([]*Leaderboard, error) {
 	var leaderboards []*Leaderboard
 	err := d.db.Model(&leaderboards).
+		Limit(limit).
+		Offset(offset).
 		Select()
 	if err != nil && err != pg.ErrNoRows {
 		return nil, err
@@ -60,7 +62,7 @@ func (d *DAL) Create(leaderboard *Leaderboard) error {
 func (d *DAL) Delete(leaderboard *Leaderboard) error {
 	return d.db.RunInTransaction(func(tx *pg.Tx) error {
 		// List all players in the leaderboard
-		var players []*player.Player
+		players := []*player.Player{}
 		err := d.db.Model(&players).
 			Where("leaderboard_id = ?", leaderboard.ID).
 			Select()
@@ -68,13 +70,14 @@ func (d *DAL) Delete(leaderboard *Leaderboard) error {
 			return err
 		}
 
-		// Delete all players in the leaderboard
-		err = d.db.Delete(&players)
-		if err != nil {
-			if err == pg.ErrNoRows {
-				return errors.Wrap(constants.ErrPlayerNotFound, err.Error())
+		if len(players) > 0 {
+			// Delete all players in the leaderboard
+			err = d.db.Delete(&players)
+			if err != nil {
+				if err != pg.ErrNoRows {
+					return err
+				}
 			}
-			return err
 		}
 
 		// Delete the leaderboard

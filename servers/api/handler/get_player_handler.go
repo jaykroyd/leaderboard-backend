@@ -10,18 +10,18 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type GetScoreHandler struct {
+type GetPlayerHandler struct {
 	logger     logrus.FieldLogger
 	decoder    app.Decoder
 	controller player.PlayerController
 }
 
-type GetScoreRequest struct {
+type GetPlayerRequest struct {
 	PlayerID uuid.UUID `json:"player_id"`
 }
 
-func NewGetScoreHandler(logger logrus.FieldLogger, decoder app.Decoder, controller player.PlayerController) *GetScoreHandler {
-	h := &GetScoreHandler{
+func NewGetPlayerHandler(logger logrus.FieldLogger, decoder app.Decoder, controller player.PlayerController) *GetPlayerHandler {
+	h := &GetPlayerHandler{
 		logger:     logger,
 		decoder:    decoder,
 		controller: controller,
@@ -36,27 +36,27 @@ func NewGetScoreHandler(logger logrus.FieldLogger, decoder app.Decoder, controll
 	return h
 }
 
-func (h *GetScoreHandler) GetMethod() string {
+func (h *GetPlayerHandler) GetMethod() string {
 	return http.MethodGet
 }
 
-func (h *GetScoreHandler) GetPath() string {
-	return "/score"
+func (h *GetPlayerHandler) GetPath() string {
+	return "/player"
 }
 
-func (h *GetScoreHandler) Handle(r *http.Request) app.Response {
-	req := GetScoreRequest{}
+func (h *GetPlayerHandler) Handle(r *http.Request) app.Response {
+	req := GetPlayerRequest{}
 	if err := h.decoder.DecodeRequest(r, &req); err != nil {
 		h.logger.WithError(err).Error("error decoding request")
 		return app.NewBadRequest(err)
 	}
 
-	h.logger.WithFields(logrus.Fields{"request": req}).Info("getting player score")
-	score, err := h.controller.Get(req.PlayerID)
+	h.logger.WithFields(logrus.Fields{"request": req}).Info("getting player")
+	player, err := h.controller.Get(req.PlayerID)
 	if err != nil {
 		return app.NewInternalServerError(err)
 	}
 
-	h.logger.WithFields(logrus.Fields{"score": score}).Info("successfully retrieved player score")
-	return app.NewStatusOK(score)
+	h.logger.WithFields(logrus.Fields{"player": player}).Info("successfully retrieved player")
+	return app.NewStatusOK(player)
 }

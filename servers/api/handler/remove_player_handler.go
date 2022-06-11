@@ -41,7 +41,7 @@ func (h *RemovePlayerHandler) GetMethod() string {
 }
 
 func (h *RemovePlayerHandler) GetPath() string {
-	return ""
+	return "/player"
 }
 
 func (h *RemovePlayerHandler) Handle(r *http.Request) app.Response {

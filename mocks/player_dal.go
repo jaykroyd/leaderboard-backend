@@ -35,20 +35,6 @@ func (m *MockPlayerDAL) EXPECT() *MockPlayerDALMockRecorder {
 	return m.recorder
 }
 
-// BatchDelete mocks base method.
-func (m *MockPlayerDAL) BatchDelete(players []*player.Player) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "BatchDelete", players)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// BatchDelete indicates an expected call of BatchDelete.
-func (mr *MockPlayerDALMockRecorder) BatchDelete(players interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchDelete", reflect.TypeOf((*MockPlayerDAL)(nil).BatchDelete), players)
-}
-
 // Create mocks base method.
 func (m *MockPlayerDAL) Create(player *player.Player) error {
 	m.ctrl.T.Helper()
@@ -93,18 +79,18 @@ func (mr *MockPlayerDALMockRecorder) GetByPK(id interface{}) *gomock.Call {
 }
 
 // List mocks base method.
-func (m *MockPlayerDAL) List(leaderboardId uuid.UUID) ([]*player.Player, error) {
+func (m *MockPlayerDAL) List(leaderboardId uuid.UUID, limit, offset int) ([]*player.Player, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", leaderboardId)
+	ret := m.ctrl.Call(m, "List", leaderboardId, limit, offset)
 	ret0, _ := ret[0].([]*player.Player)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // List indicates an expected call of List.
-func (mr *MockPlayerDALMockRecorder) List(leaderboardId interface{}) *gomock.Call {
+func (mr *MockPlayerDALMockRecorder) List(leaderboardId, limit, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockPlayerDAL)(nil).List), leaderboardId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockPlayerDAL)(nil).List), leaderboardId, limit, offset)
 }
 
 // UpdateScore mocks base method.

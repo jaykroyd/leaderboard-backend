@@ -42,7 +42,7 @@ func (h *UpdateScoreHandler) GetMethod() string {
 }
 
 func (h *UpdateScoreHandler) GetPath() string {
-	return "/score"
+	return "/player/score"
 }
 
 func (h *UpdateScoreHandler) Handle(r *http.Request) app.Response {
@@ -59,5 +59,7 @@ func (h *UpdateScoreHandler) Handle(r *http.Request) app.Response {
 	}
 
 	h.logger.WithFields(logrus.Fields{"delta": req.Amount, "after": score}).Info("score updated successfully")
-	return app.NewStatusOK(score)
+	return app.NewStatusOK(map[string]int{
+		"new_score": score,
+	})
 }

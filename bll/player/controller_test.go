@@ -48,6 +48,44 @@ func TestGet(t *testing.T) {
 	})
 }
 
+func TestList(t *testing.T) {
+	t.Parallel()
+
+	var (
+		pDal *mocks.MockPlayerDAL
+	)
+
+	setup := func(ctrl *gomock.Controller) {
+		pDal = mocks.NewMockPlayerDAL(ctrl)
+	}
+
+	t.Run("test_success", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		setup(ctrl)
+
+		var (
+			leaderboardId = uuid.New()
+			expected      = []*playerDal.Player{
+				{
+					ID:            uuid.New(),
+					LeaderboardID: uuid.New(),
+					Score:         0,
+					CreatedAt:     types.NullTime{Time: time.Now().UTC()},
+					UpdatedAt:     types.NullTime{Time: time.Now().UTC()},
+				},
+			}
+		)
+
+		pDal.EXPECT().List(leaderboardId, 10, 0).Return(expected, nil)
+
+		service := player.NewController(pDal)
+		lb, err := service.List(leaderboardId, 10, 0)
+		assert.Nil(t, err)
+		assert.Equal(t, expected, lb)
+	})
+}
+
 func TestUpdateScore(t *testing.T) {
 	t.Parallel()
 

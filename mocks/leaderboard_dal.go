@@ -79,16 +79,16 @@ func (mr *MockLeaderboardDALMockRecorder) GetByPK(id interface{}) *gomock.Call {
 }
 
 // List mocks base method.
-func (m *MockLeaderboardDAL) List() ([]*leaderboard.Leaderboard, error) {
+func (m *MockLeaderboardDAL) List(limit, offset int) ([]*leaderboard.Leaderboard, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", limit, offset)
 	ret0, _ := ret[0].([]*leaderboard.Leaderboard)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // List indicates an expected call of List.
-func (mr *MockLeaderboardDALMockRecorder) List() *gomock.Call {
+func (mr *MockLeaderboardDALMockRecorder) List(limit, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLeaderboardDAL)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLeaderboardDAL)(nil).List), limit, offset)
 }

@@ -11,7 +11,7 @@ import (
 
 type PlayerDAL interface {
 	GetByPK(id uuid.UUID) (*Player, error)
-	List(leaderboardId uuid.UUID) ([]*Player, error)
+	List(leaderboardId uuid.UUID, limit int, offset int) ([]*Player, error)
 	Create(player *Player) error
 	UpdateScore(player *Player) error
 	Delete(player *Player) error
@@ -38,10 +38,13 @@ func (d *DAL) GetByPK(id uuid.UUID) (*Player, error) {
 	return player, nil
 }
 
-func (d *DAL) List(leaderboardId uuid.UUID) ([]*Player, error) {
+func (d *DAL) List(leaderboardId uuid.UUID, limit int, offset int) ([]*Player, error) {
 	var players []*Player
 	err := d.db.Model(&players).
 		Where("leaderboard_id = ?", leaderboardId).
+		Order("score DESC").
+		Limit(limit).
+		Offset(offset).
 		Select()
 	if err != nil && err != pg.ErrNoRows {
 		return nil, err

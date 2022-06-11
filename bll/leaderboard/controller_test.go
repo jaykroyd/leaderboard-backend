@@ -104,10 +104,10 @@ func TestList(t *testing.T) {
 			}
 		)
 
-		lbDal.EXPECT().List().Return(expected, nil)
+		lbDal.EXPECT().List(10, 0).Return(expected, nil)
 
 		service := leaderboard.NewController(lbDal)
-		lbs, err := service.List()
+		lbs, err := service.List(10, 0)
 		assert.Nil(t, err)
 		assert.Equal(t, expected, lbs)
 	})

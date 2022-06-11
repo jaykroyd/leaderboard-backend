@@ -11,12 +11,19 @@ import (
 
 type ListLeaderboardHandler struct {
 	logger     logrus.FieldLogger
+	decoder    app.Decoder
 	controller leaderboard.LeaderboardController
 }
 
-func NewListLeaderboardsHandler(logger logrus.FieldLogger, controller leaderboard.LeaderboardController) *ListLeaderboardHandler {
+type ListLeaderboardRequest struct {
+	Limit  int `json:"limit"`
+	Offset int `json:"offset"`
+}
+
+func NewListLeaderboardsHandler(logger logrus.FieldLogger, decoder app.Decoder, controller leaderboard.LeaderboardController) *ListLeaderboardHandler {
 	h := &ListLeaderboardHandler{
 		logger:     logger,
+		decoder:    decoder,
 		controller: controller,
 	}
 
@@ -34,11 +41,17 @@ func (h *ListLeaderboardHandler) GetMethod() string {
 }
 
 func (h *ListLeaderboardHandler) GetPath() string {
-	return "/leaderboards"
+	return "/leaderboard/list"
 }
 
 func (h *ListLeaderboardHandler) Handle(r *http.Request) app.Response {
-	lbs, err := h.controller.List()
+	req := ListLeaderboardRequest{}
+	if err := h.decoder.DecodeRequest(r, &req); err != nil {
+		h.logger.WithError(err).Error("error decoding request")
+		return app.NewBadRequest(err)
+	}
+
+	lbs, err := h.controller.List(req.Limit, req.Offset)
 	if err != nil {
 		return app.NewInternalServerError(err)
 	}
