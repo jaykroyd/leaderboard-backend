@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:13.1
+    container_name: leaderboard_postgres
+    ports:
+      - 9200:5432
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=postgres
+    command: ["postgres", "-c", "log_statement=all"]

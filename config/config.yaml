@@ -1,0 +1,21 @@
+environment: staging
+
+logging:
+  level: debug
+
+http:
+  address: 0.0.0.0:9000
+  auth:
+    enabled: true
+    user: user
+    pass: pass
+
+postgres:
+  host: localhost
+  port: 9200
+  user: user
+  pass: 
+  database: postgres
+  poolSize: 20
+  maxRetries: 3 
+  connectionTimeout: 100s
