@@ -153,7 +153,7 @@ func TestCreate(t *testing.T) {
 		pDal.EXPECT().Create(gomock.Any()).Return(nil)
 
 		service := player.NewController(pDal)
-		player, err := service.Create(expected.LeaderboardID)
+		player, err := service.Create(expected.LeaderboardID, "test")
 		assert.Nil(t, err)
 		assert.Equal(t, expected, player)
 	})

@@ -7,6 +7,7 @@ import (
 )
 
 type Factory interface {
+	SetLogger(logger *PgLogger)
 	NewLeaderboardDAL() leaderboard.LeaderboardDAL
 	NewPlayerDAL() player.PlayerDAL
 }
@@ -27,6 +28,10 @@ func NewPgFactory(config Config) *PgFactory {
 			PoolTimeout: config.ConnectionTimeout,
 		}),
 	}
+}
+
+func (f *PgFactory) SetLogger(logger *PgLogger) {
+	f.db.AddQueryHook(logger)
 }
 
 func (f *PgFactory) NewLeaderboardDAL() leaderboard.LeaderboardDAL {

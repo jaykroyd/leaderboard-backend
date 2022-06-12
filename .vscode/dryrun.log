@@ -1,5 +1,7 @@
+make.exe --dry-run --always-make --keep-going --print-directory
 make: Entering directory 'e:/Engineering/General/leaderboard'
 make bll-mocks
 make dal-mocks
+ 
 make: Leaving directory 'e:/Engineering/General/leaderboard'
  

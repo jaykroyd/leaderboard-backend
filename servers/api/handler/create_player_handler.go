@@ -18,6 +18,7 @@ type CreatePlayerHandler struct {
 
 type CreatePlayerRequest struct {
 	LeaderboardID uuid.UUID `json:"leaderboard_id"`
+	Name          string    `json:"name"`
 }
 
 func NewCreatePlayerHandler(logger logrus.FieldLogger, decoder app.Decoder, controller player.PlayerController) *CreatePlayerHandler {
@@ -52,7 +53,7 @@ func (h *CreatePlayerHandler) Handle(r *http.Request) app.Response {
 	}
 
 	h.logger.WithFields(logrus.Fields{"request": req}).Info("creating new player")
-	player, err := h.controller.Create(req.LeaderboardID)
+	player, err := h.controller.Create(req.LeaderboardID, req.Name)
 	if err != nil {
 		return app.NewInternalServerError(err)
 	}

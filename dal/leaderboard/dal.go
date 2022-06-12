@@ -63,7 +63,7 @@ func (d *DAL) Delete(leaderboard *Leaderboard) error {
 	return d.db.RunInTransaction(func(tx *pg.Tx) error {
 		// List all players in the leaderboard
 		players := []*player.Player{}
-		err := d.db.Model(&players).
+		err := tx.Model(&players).
 			Where("leaderboard_id = ?", leaderboard.ID).
 			Select()
 		if err != nil && err != pg.ErrNoRows {
@@ -72,7 +72,7 @@ func (d *DAL) Delete(leaderboard *Leaderboard) error {
 
 		if len(players) > 0 {
 			// Delete all players in the leaderboard
-			err = d.db.Delete(&players)
+			err = tx.Delete(&players)
 			if err != nil {
 				if err != pg.ErrNoRows {
 					return err
@@ -81,7 +81,7 @@ func (d *DAL) Delete(leaderboard *Leaderboard) error {
 		}
 
 		// Delete the leaderboard
-		_, err = d.db.Model(leaderboard).
+		_, err = tx.Model(leaderboard).
 			WherePK().
 			Delete()
 		if err != nil {

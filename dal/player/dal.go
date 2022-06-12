@@ -11,7 +11,8 @@ import (
 
 type PlayerDAL interface {
 	GetByPK(id uuid.UUID) (*Player, error)
-	List(leaderboardId uuid.UUID, limit int, offset int) ([]*Player, error)
+	GetRankedByPK(id uuid.UUID) (*RankedPlayer, error)
+	List(leaderboardId uuid.UUID, limit int, offset int) ([]*RankedPlayer, error)
 	Create(player *Player) error
 	UpdateScore(player *Player) error
 	Delete(player *Player) error
@@ -38,11 +39,26 @@ func (d *DAL) GetByPK(id uuid.UUID) (*Player, error) {
 	return player, nil
 }
 
-func (d *DAL) List(leaderboardId uuid.UUID, limit int, offset int) ([]*Player, error) {
-	var players []*Player
+func (d *DAL) GetRankedByPK(id uuid.UUID) (*RankedPlayer, error) {
+	player := &RankedPlayer{Player: &Player{ID: id}}
+	err := d.db.Model(player).
+		WherePK().
+		Column("*").
+		ColumnExpr("Row_number() OVER (PARTITION BY leaderboard_id ORDER BY score DESC) as rank").
+		Select()
+	if err != nil {
+		return nil, err
+	}
+	return player, nil
+}
+
+func (d *DAL) List(leaderboardId uuid.UUID, limit int, offset int) ([]*RankedPlayer, error) {
+	var players []*RankedPlayer
 	err := d.db.Model(&players).
 		Where("leaderboard_id = ?", leaderboardId).
 		Order("score DESC").
+		Column("*").
+		ColumnExpr("Row_number() OVER (PARTITION BY leaderboard_id ORDER BY score DESC) as rank").
 		Limit(limit).
 		Offset(offset).
 		Select()

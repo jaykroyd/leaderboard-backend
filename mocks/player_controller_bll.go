@@ -36,25 +36,25 @@ func (m *MockPlayerController) EXPECT() *MockPlayerControllerMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockPlayerController) Create(leaderboardId uuid.UUID) (*player.Player, error) {
+func (m *MockPlayerController) Create(leaderboardId uuid.UUID, name string) (*player.Player, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", leaderboardId)
+	ret := m.ctrl.Call(m, "Create", leaderboardId, name)
 	ret0, _ := ret[0].(*player.Player)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockPlayerControllerMockRecorder) Create(leaderboardId interface{}) *gomock.Call {
+func (mr *MockPlayerControllerMockRecorder) Create(leaderboardId, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockPlayerController)(nil).Create), leaderboardId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockPlayerController)(nil).Create), leaderboardId, name)
 }
 
 // Get mocks base method.
-func (m *MockPlayerController) Get(playerId uuid.UUID) (*player.Player, error) {
+func (m *MockPlayerController) Get(playerId uuid.UUID) (*player.RankedPlayer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", playerId)
-	ret0, _ := ret[0].(*player.Player)
+	ret0, _ := ret[0].(*player.RankedPlayer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -66,10 +66,10 @@ func (mr *MockPlayerControllerMockRecorder) Get(playerId interface{}) *gomock.Ca
 }
 
 // List mocks base method.
-func (m *MockPlayerController) List(leaderboardId uuid.UUID, limit, offset int) ([]*player.Player, error) {
+func (m *MockPlayerController) List(leaderboardId uuid.UUID, limit, offset int) ([]*player.RankedPlayer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", leaderboardId, limit, offset)
-	ret0, _ := ret[0].([]*player.Player)
+	ret0, _ := ret[0].([]*player.RankedPlayer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

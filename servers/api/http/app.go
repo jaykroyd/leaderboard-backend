@@ -41,19 +41,18 @@ func New(logger logrus.FieldLogger, config config.Config) *app.App {
 	decoder := decoder.New()
 	api := a.Router().Subrouter("/api")
 	api.AddHandlers(
+		// Leaderboards
 		handler.NewCreateLeaderboardHandler(logger, lbController),
 		handler.NewGetLeaderboardHandler(logger, decoder, lbController),
 		handler.NewListLeaderboardsHandler(logger, decoder, lbController),
 		handler.NewRemoveLeaderboardHandler(logger, decoder, lbController),
-	)
 
-	api.AddHandlers(
+		// Players
 		handler.NewUpdateScoreHandler(logger, decoder, playerController),
 		handler.NewGetPlayerHandler(logger, decoder, playerController),
 		handler.NewListPlayerHandler(logger, decoder, playerController),
 		handler.NewCreatePlayerHandler(logger, decoder, playerController),
 		handler.NewRemovePlayerHandler(logger, decoder, playerController),
 	)
-
 	return a
 }

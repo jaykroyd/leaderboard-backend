@@ -78,11 +78,26 @@ func (mr *MockPlayerDALMockRecorder) GetByPK(id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByPK", reflect.TypeOf((*MockPlayerDAL)(nil).GetByPK), id)
 }
 
+// GetRankedByPK mocks base method.
+func (m *MockPlayerDAL) GetRankedByPK(id uuid.UUID) (*player.RankedPlayer, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRankedByPK", id)
+	ret0, _ := ret[0].(*player.RankedPlayer)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRankedByPK indicates an expected call of GetRankedByPK.
+func (mr *MockPlayerDALMockRecorder) GetRankedByPK(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRankedByPK", reflect.TypeOf((*MockPlayerDAL)(nil).GetRankedByPK), id)
+}
+
 // List mocks base method.
-func (m *MockPlayerDAL) List(leaderboardId uuid.UUID, limit, offset int) ([]*player.Player, error) {
+func (m *MockPlayerDAL) List(leaderboardId uuid.UUID, limit, offset int) ([]*player.RankedPlayer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", leaderboardId, limit, offset)
-	ret0, _ := ret[0].([]*player.Player)
+	ret0, _ := ret[0].([]*player.RankedPlayer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

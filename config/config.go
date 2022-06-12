@@ -8,15 +8,15 @@ import (
 )
 
 func BuildConfig() Config {
-	vpr, err := configureViper("config/config.yaml", "app", "yaml")
+	vpr, err := ConfigureViper("config/config.yaml", "app", "yaml")
 	if err != nil {
 		panic("failed to create viper instance")
 	}
 
-	return parseAll(vpr)
+	return ParseAll(vpr)
 }
 
-func parseAll(vpr *viper.Viper) Config {
+func ParseAll(vpr *viper.Viper) Config {
 	value := *new(Config)
 	if err := vpr.Unmarshal(&value); err != nil {
 		panic("failed to unmarshal full config")
@@ -24,7 +24,7 @@ func parseAll(vpr *viper.Viper) Config {
 	return value
 }
 
-func configureViper(path, envPrefix, configType string) (*viper.Viper, error) {
+func ConfigureViper(path, envPrefix, configType string) (*viper.Viper, error) {
 	vpr := viper.New()
 	defaultConfig := bytes.NewReader([]byte{})
 	vpr.SetConfigType("yaml")

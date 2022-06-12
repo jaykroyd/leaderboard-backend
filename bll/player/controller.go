@@ -3,16 +3,15 @@ package player
 import (
 	"errors"
 
-	"github.com/byyjoww/leaderboard/constants"
 	"github.com/byyjoww/leaderboard/dal/player"
 	"github.com/google/uuid"
 )
 
 type PlayerController interface {
-	Get(playerId uuid.UUID) (*player.Player, error)
-	List(leaderboardId uuid.UUID, limit int, offset int) ([]*player.Player, error)
+	Get(playerId uuid.UUID) (*player.RankedPlayer, error)
+	List(leaderboardId uuid.UUID, limit int, offset int) ([]*player.RankedPlayer, error)
 	UpdateScore(playerId uuid.UUID, amount int) (int, error)
-	Create(leaderboardId uuid.UUID) (*player.Player, error)
+	Create(leaderboardId uuid.UUID, name string) (*player.Player, error)
 	Remove(playerId uuid.UUID) error
 }
 
@@ -26,24 +25,18 @@ func NewController(dal player.PlayerDAL) *Controller {
 	}
 }
 
-func (c *Controller) Get(playerId uuid.UUID) (*player.Player, error) {
-	return c.dal.GetByPK(playerId)
+func (c *Controller) Get(playerId uuid.UUID) (*player.RankedPlayer, error) {
+	return c.dal.GetRankedByPK(playerId)
 }
 
-func (c *Controller) List(leaderboardId uuid.UUID, limit int, offset int) ([]*player.Player, error) {
+func (c *Controller) List(leaderboardId uuid.UUID, limit int, offset int) ([]*player.RankedPlayer, error) {
 	return c.dal.List(leaderboardId, limit, offset)
 }
 
 func (c *Controller) UpdateScore(playerId uuid.UUID, amount int) (int, error) {
-	p, err := c.Get(playerId)
+	p, err := c.dal.GetByPK(playerId)
 	if err != nil {
-		if errors.Is(err, constants.ErrPlayerNotFound) {
-			p = &player.Player{
-				ID:            playerId,
-				LeaderboardID: [16]byte{},
-				Score:         0,
-			}
-		}
+		return 0, nil
 	}
 
 	prev := p.Score
@@ -60,18 +53,25 @@ func (c *Controller) UpdateScore(playerId uuid.UUID, amount int) (int, error) {
 	return p.Score, nil
 }
 
-func (c *Controller) Create(leaderboardId uuid.UUID) (*player.Player, error) {
+func (c *Controller) Create(leaderboardId uuid.UUID, name string) (*player.Player, error) {
+	if len(name) > 50 {
+		return nil, errors.New("player name is too long")
+	}
+
 	p := &player.Player{
 		LeaderboardID: leaderboardId,
+		Name:          name,
 		Score:         0,
 	}
+
 	return p, c.dal.Create(p)
 }
 
 func (c *Controller) Remove(playerId uuid.UUID) error {
-	p, err := c.Get(playerId)
+	p, err := c.dal.GetByPK(playerId)
 	if err != nil {
 		return err
 	}
+
 	return c.dal.Delete(p)
 }
