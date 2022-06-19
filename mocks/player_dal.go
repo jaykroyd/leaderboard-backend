@@ -63,6 +63,21 @@ func (mr *MockPlayerDALMockRecorder) Delete(player interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockPlayerDAL)(nil).Delete), player)
 }
 
+// Exists mocks base method.
+func (m *MockPlayerDAL) Exists(name string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Exists", name)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Exists indicates an expected call of Exists.
+func (mr *MockPlayerDALMockRecorder) Exists(name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exists", reflect.TypeOf((*MockPlayerDAL)(nil).Exists), name)
+}
+
 // GetByPK mocks base method.
 func (m *MockPlayerDAL) GetByPK(id uuid.UUID) (*player.Player, error) {
 	m.ctrl.T.Helper()
@@ -120,4 +135,18 @@ func (m *MockPlayerDAL) UpdateScore(player *player.Player) error {
 func (mr *MockPlayerDALMockRecorder) UpdateScore(player interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateScore", reflect.TypeOf((*MockPlayerDAL)(nil).UpdateScore), player)
+}
+
+// UpdateScoreForLeaderboard mocks base method.
+func (m *MockPlayerDAL) UpdateScoreForLeaderboard(leaderboardId uuid.UUID, score int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateScoreForLeaderboard", leaderboardId, score)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateScoreForLeaderboard indicates an expected call of UpdateScoreForLeaderboard.
+func (mr *MockPlayerDALMockRecorder) UpdateScoreForLeaderboard(leaderboardId, score interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateScoreForLeaderboard", reflect.TypeOf((*MockPlayerDAL)(nil).UpdateScoreForLeaderboard), leaderboardId, score)
 }

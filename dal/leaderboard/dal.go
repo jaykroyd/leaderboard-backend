@@ -13,6 +13,7 @@ type LeaderboardDAL interface {
 	List(limit int, offset int) ([]*Leaderboard, error)
 	Create(leaderboard *Leaderboard) error
 	Delete(leaderboard *Leaderboard) error
+	Reset(leaderboardId uuid.UUID) error
 }
 
 type DAL struct {
@@ -93,4 +94,30 @@ func (d *DAL) Delete(leaderboard *Leaderboard) error {
 
 		return nil
 	})
+}
+
+func (d *DAL) Reset(leaderboardId uuid.UUID) error {
+	// List all players in the leaderboard
+	players := []*player.Player{}
+	err := d.db.Model(&players).
+		Where("leaderboard_id = ?", leaderboardId).
+		Select()
+	if err != nil && err != pg.ErrNoRows {
+		return err
+	}
+
+	for _, p := range players {
+		p.Score = 0
+	}
+
+	if len(players) > 0 {
+		// Update the score to 0 for all players in leaderboard
+		err = d.db.Update(&players)
+		if err != nil {
+			if err != pg.ErrNoRows {
+				return err
+			}
+		}
+	}
+	return nil
 }

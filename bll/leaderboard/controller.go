@@ -10,6 +10,7 @@ type LeaderboardController interface {
 	Get(leaderboardId uuid.UUID) (*leaderboard.Leaderboard, error)
 	Create() (*leaderboard.Leaderboard, error)
 	Remove(leaderboardId uuid.UUID) error
+	Reset(leaderboardId uuid.UUID) error
 }
 
 type Controller struct {
@@ -41,4 +42,8 @@ func (c *Controller) Remove(leaderboardId uuid.UUID) error {
 		return err
 	}
 	return c.dal.Delete(lb)
+}
+
+func (c *Controller) Reset(leaderboardId uuid.UUID) error {
+	return c.dal.Reset(leaderboardId)
 }

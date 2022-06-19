@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sun Jun 12 19:21:42 2022
+# Make data base, printed on Sun Jun 19 00:26:29 2022
 
 # Variables
 
@@ -25,9 +25,9 @@ USERPROFILE = C:\Users\Jonathan
 # environment
 LOCALAPPDATA = C:\Users\Jonathan\AppData\Local
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-2cc5c2df-68db-49ca-80e2-402751197826-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-86223f07-b61d-4145-b42e-1bb0408e2813-sock
 # environment
-VSCODE_CWD = C:\Users\Jonathan\AppData\Local\Programs\Microsoft VS Code
+VSCODE_CWD = C:\WINDOWS\System32
 # environment
 SYSTEMROOT = C:\WINDOWS
 # environment
@@ -41,7 +41,7 @@ GOPATH = C:\Users\Jonathan\go
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_3596_EAKESIJCIBTONMFR
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_4472_YFIKVXRFOXWODOZC
 # environment
 FPS_BROWSER_USER_PROFILE_STRING = Default
 # environment
@@ -57,7 +57,7 @@ VSCODE_LOG_STACK = false
 # automatic
 %F = $(notdir $%)
 # environment
-VSCODE_CODE_CACHE_PATH = C:\Users\Jonathan\AppData\Roaming\Code\CachedData\4af164ea3a06f701fe3e89a2bcbb421d2026b68f
+VSCODE_CODE_CACHE_PATH = C:\Users\Jonathan\AppData\Roaming\Code\CachedData\30d9c6cd9483b2cc586687151bcbcd635f373630
 # environment
 LANG = C
 # default
@@ -75,7 +75,7 @@ ONEDRIVE = C:\Users\Jonathan\OneDrive
 # makefile (from 'pg.mk', line 1)
 ADDRESS = $(if $(DB_ADDRESS),$(DB_ADDRESS),'localhost:9200')
 # makefile
-CURDIR := e:/Engineering/General/leaderboard
+CURDIR := e:/Engineering/Personal/leaderboards/backend
 # environment
 VSCODE_PIPE_LOGGING = true
 # environment
@@ -83,7 +83,8 @@ APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # automatic
 *D = $(patsubst %/,%,$(patsubst %\,%,$(dir $*)))
 # environment
-PROGRAMFILES = C:\Program Files (x86)
+PROGRAMFILES = C:\Program Files ( 
+x86)
 # environment
 MFLAGS = -pqrR
 # default
@@ -101,7 +102,7 @@ MAKEFILE_LIST := Makefile mocks.mk pg.mk
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 3596
+VSCODE_PID = 4472
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
 # automatic
@@ -123,8 +124,7 @@ MAKECMDGOALS := all
 # environment
 DRIVERDATA = C:\Windows\System32\Drivers\DriverData
 # environment
-COMSPEC = C:\WINDOWS\sys 
-tem32\cmd.exe
+COMSPEC = C:\WINDOWS\system32\cmd.exe
 # environment
 WINDIR = C:\WINDOWS
 # environment
@@ -132,7 +132,7 @@ MAKELEVEL := 0
 # default
 MAKE = $(MAKE_COMMAND)
 # environment
-PATH = C:\Program Files\Oculus\Support\oculus-runtime;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files\Git\cmd;C:\ProgramData\chocolatey\bin;E:\Program Files (x86)\Boundary;C:\TDM-GCC-64\bin;C:\Windows\Microsoft.NET\Framework\v4.0.30319;C:\Program Files\dotnet\;C:\Program Files\Go\bin;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Users\Jonathan\AppData\Local\Microsoft\WindowsApps;C:\Users\Jonathan\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Users\Jonathan\AppData\Local\GitHubDesktop\bin;E:\Program Files\Git\git-bash.exe;E:\Program Files (x86)\Boundary;C:\Users\Jonathan\.dotnet\tools;C:\Users\Jonathan\flutter\bin;C:\Users\Jonathan\go\bin
+PATH = C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files\Git\cmd;C:\ProgramData\chocolatey\bin;E:\Program Files (x86)\Boundary;C:\TDM-GCC-64\bin;C:\Windows\Microsoft.NET\Framework\v4.0.30319;C:\Program Files\dotnet\;C:\Program Files\Go\bin;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\nodejs\;C:\Users\Jonathan\AppData\Local\Microsoft\WindowsApps;C:\Users\Jonathan\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Users\Jonathan\AppData\Local\GitHubDesktop\bin;E:\Program Files\Git\git-bash.exe;E:\Program Files (x86)\Boundary;C:\Users\Jonathan\.dotnet\tools;C:\Users\Jonathan\flutter\bin;C:\Users\Jonathan\go\bin;C:\Users\Jonathan\AppData\Roaming\npm
 # environment
 COMPUTERNAME = DESKTOP-VNE8GIN
 # default
@@ -200,7 +200,7 @@ ELECTRON_RUN_AS_NODE = 1
 # environment
 TEMP = C:\Users\Jonathan\AppData\Local\Temp
 # environment
-VSCODE_IPC_HOOK = \\.\pipe\a0e3f5f226244589c9b00afdc900a66c-1.68.0-main-sock
+VSCODE_IPC_HOOK = \\.\pipe\a0e3f5f226244589c9b00afdc900a66c-1.68.1-main-sock
 # environment
 GOPROXY = https://proxy.golang.org,direct
 # default
@@ -228,7 +228,7 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 158 Stepping 9, GenuineIntel
 
 # Directories
 
-# . (key e:/Engineering/General/leaderboard, mtime 1655041048): 25 files, no impossibilities.
+# . (key e:/Engineering/Personal/leaderboards/backend, mtime 1655041048): 25 files, no impossibilities.
 
 # 25 files, no impossibilities in 1 directories.
 
@@ -265,8 +265,7 @@ player-dal-mock:
 
 kill-deps-test:
 #  Implicit rule search has not been done.
-#  Modifi 
-cation time never checked.
+#  Modification time never checked.
 #  File has not been updated.
 #  recipe to execute (from 'pg.mk', line 27):
 	@cd docker/test && docker-compose down
@@ -283,7 +282,8 @@ deps-test:
 # Not a target:
 pg.mk:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-11 21:54:00
+#  Last mod 
+ified 2022-06-11 21:54:00
 #  File has been updated.
 #  Successfully updated.
 
@@ -299,7 +299,8 @@ migrations-init:
 #  Modification time never checked.
 #  File has not been updated.
 #  recipe to execute (from 'pg.mk', line 30):
-	@cd migrations && go run *.go -address $(ADDRESS) -user $(USER) -pass $(PASSWORD) -database $(DATABASE) init
+	@cd migrations && go run *.go -address $(ADDRESS) -user $(USER) -pass $(PASSWORD) -database $(DATABASE) ini 
+t
 
 leaderboard-controller-bll-mock:
 #  Implicit rule search has not been done.
@@ -359,8 +360,7 @@ player-controller-bll-mock:
 	@mockgen -source=bll/player/controller.go -package mocks -mock_names="Controller=MockPlayerController" -destination mocks/player_controller_bll.go
 
 run:
-#  Implicit rule search 
- has not been done.
+#  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 #  recipe to execute (from 'pg.mk', line 7):
@@ -380,7 +380,8 @@ migrate-down:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'pg.mk', line 37):
+#  recipe to execute  
+(from 'pg.mk', line 37):
 	@echo "Running rollback migration on database: $(ADDRESS)"
 	@cd migrations && go run *.go -address $(ADDRESS) -user $(USER) -pass $(PASSWORD) -database $(DATABASE) down
 
@@ -413,6 +414,6 @@ migration-version:
 # strcache performance: lookups = 68 / hit rate = 36%
 # hash-table stats:
 # Load=43/8192=1%, Rehash=0, Collisions=2/68=3%
-# Finished Make data base on Sun Jun 12 19:21:42 2022
+# Finished Make data base on Sun Jun 19 00:26:29 2022
 
  

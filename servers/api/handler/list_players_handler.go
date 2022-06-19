@@ -10,19 +10,20 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type ListPlayerHandler struct {
+type ListPlayersHandler struct {
 	logger     logrus.FieldLogger
 	decoder    app.Decoder
 	controller player.PlayerController
 }
 
-type ListPlayerRequest struct {
+type ListPlayersRequest struct {
 	LeaderboardID uuid.UUID `json:"leaderboard_id"`
 	Limit         int       `json:"limit"`
+	Offset        int       `json:"offset"`
 }
 
-func NewListPlayerHandler(logger logrus.FieldLogger, decoder app.Decoder, controller player.PlayerController) *ListPlayerHandler {
-	h := &ListPlayerHandler{
+func NewListPlayersHandler(logger logrus.FieldLogger, decoder app.Decoder, controller player.PlayerController) *ListPlayersHandler {
+	h := &ListPlayersHandler{
 		logger:     logger,
 		decoder:    decoder,
 		controller: controller,
@@ -37,23 +38,23 @@ func NewListPlayerHandler(logger logrus.FieldLogger, decoder app.Decoder, contro
 	return h
 }
 
-func (h *ListPlayerHandler) GetMethod() string {
+func (h *ListPlayersHandler) GetMethod() string {
 	return http.MethodGet
 }
 
-func (h *ListPlayerHandler) GetPath() string {
+func (h *ListPlayersHandler) GetPath() string {
 	return "/player/list"
 }
 
-func (h *ListPlayerHandler) Handle(r *http.Request) app.Response {
-	req := ListPlayerRequest{}
+func (h *ListPlayersHandler) Handle(r *http.Request) app.Response {
+	req := ListPlayersRequest{}
 	if err := h.decoder.DecodeRequest(r, &req); err != nil {
 		h.logger.WithError(err).Error("error decoding request")
 		return app.NewBadRequest(err)
 	}
 
 	h.logger.WithFields(logrus.Fields{"request": req}).Info("getting player")
-	players, err := h.controller.List(req.LeaderboardID, req.Limit, 0)
+	players, err := h.controller.List(req.LeaderboardID, req.Limit, req.Offset)
 	if err != nil {
 		return app.NewInternalServerError(err)
 	}

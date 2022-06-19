@@ -54,8 +54,8 @@ func (c *Controller) UpdateScore(playerId uuid.UUID, amount int) (int, error) {
 }
 
 func (c *Controller) Create(leaderboardId uuid.UUID, name string) (*player.Player, error) {
-	if len(name) > 50 {
-		return nil, errors.New("player name is too long")
+	if err := c.validateName(name); err != nil {
+		return nil, err
 	}
 
 	p := &player.Player{
@@ -74,4 +74,21 @@ func (c *Controller) Remove(playerId uuid.UUID) error {
 	}
 
 	return c.dal.Delete(p)
+}
+
+func (c *Controller) validateName(name string) error {
+	if len(name) > 50 {
+		return errors.New("player name is too long")
+	}
+
+	// exists, err := c.dal.Exists(name)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// if exists {
+	// 	return fmt.Errorf("player with name %s already exists", name)
+	// }
+
+	return nil
 }

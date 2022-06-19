@@ -10,6 +10,7 @@ import (
 )
 
 type PlayerDAL interface {
+	Exists(name string) (bool, error)
 	GetByPK(id uuid.UUID) (*Player, error)
 	GetRankedByPK(id uuid.UUID) (*RankedPlayer, error)
 	List(leaderboardId uuid.UUID, limit int, offset int) ([]*RankedPlayer, error)
@@ -26,6 +27,13 @@ func NewDAL(db *pg.DB) *DAL {
 	return &DAL{
 		db: db,
 	}
+}
+
+func (d *DAL) Exists(name string) (bool, error) {
+	player := &Player{Name: name}
+	return d.db.Model(player).
+		Where("name = ?", name).
+		Exists()
 }
 
 func (d *DAL) GetByPK(id uuid.UUID) (*Player, error) {

@@ -50,7 +50,7 @@ func New(logger logrus.FieldLogger, config config.Config) *app.App {
 		// Players
 		handler.NewUpdateScoreHandler(logger, decoder, playerController),
 		handler.NewGetPlayerHandler(logger, decoder, playerController),
-		handler.NewListPlayerHandler(logger, decoder, playerController),
+		handler.NewListPlayersHandler(logger, decoder, playerController),
 		handler.NewCreatePlayerHandler(logger, decoder, playerController),
 		handler.NewRemovePlayerHandler(logger, decoder, playerController),
 	)

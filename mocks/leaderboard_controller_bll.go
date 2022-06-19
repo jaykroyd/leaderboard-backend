@@ -93,3 +93,17 @@ func (mr *MockLeaderboardControllerMockRecorder) Remove(leaderboardId interface{
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockLeaderboardController)(nil).Remove), leaderboardId)
 }
+
+// Reset mocks base method.
+func (m *MockLeaderboardController) Reset(leaderboardId uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Reset", leaderboardId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Reset indicates an expected call of Reset.
+func (mr *MockLeaderboardControllerMockRecorder) Reset(leaderboardId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Reset", reflect.TypeOf((*MockLeaderboardController)(nil).Reset), leaderboardId)
+}

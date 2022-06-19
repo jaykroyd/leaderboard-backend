@@ -19,7 +19,7 @@ func BuildConfig() Config {
 func ParseAll(vpr *viper.Viper) Config {
 	value := *new(Config)
 	if err := vpr.Unmarshal(&value); err != nil {
-		panic("failed to unmarshal full config")
+		panic("failed to unmarshal config")
 	}
 	return value
 }
