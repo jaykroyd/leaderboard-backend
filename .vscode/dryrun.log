@@ -1,7 +1,6 @@
-make.exe --dry-run --always-make --keep-going --print-directory
-make: Entering directory 'e:/Engineering/Personal/leaderboards/backend'
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/Users/jon/Documents/GitHub/leaderboard'
 make bll-mocks
 make dal-mocks
- 
-make: Leaving directory 'e:/Engineering/Personal/leaderboards/backend'
+make: Leaving directory `/Users/jon/Documents/GitHub/leaderboard'
  

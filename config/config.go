@@ -7,16 +7,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-func BuildConfig() Config {
+func Build() Config {
 	vpr, err := ConfigureViper("config/config.yaml", "app", "yaml")
 	if err != nil {
 		panic("failed to create viper instance")
 	}
 
-	return ParseAll(vpr)
+	return Parse(vpr)
 }
 
-func ParseAll(vpr *viper.Viper) Config {
+func Parse(vpr *viper.Viper) Config {
 	value := *new(Config)
 	if err := vpr.Unmarshal(&value); err != nil {
 		panic("failed to unmarshal config")

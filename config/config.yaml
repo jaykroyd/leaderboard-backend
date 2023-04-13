@@ -4,11 +4,18 @@ logging:
   level: debug
 
 http:
-  address: 0.0.0.0:9000
-  auth:
-    enabled: true
-    user: user
-    pass: pass
+  api:
+    address: 0.0.0.0:8080
+    auth:
+      enabled: true
+      user: user
+      pass: 
+  telemetry:
+    address: 0.0.0.0:9800
+    auth:
+      enabled: false
+      user:
+      pass:
 
 postgres:
   host: localhost

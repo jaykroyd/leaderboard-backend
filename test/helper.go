@@ -25,5 +25,5 @@ func GetTestConfig() config.Config {
 		panic("failed to create viper instance")
 	}
 
-	return config.ParseAll(vpr)
+	return config.Parse(vpr)
 }

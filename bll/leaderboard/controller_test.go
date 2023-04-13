@@ -32,7 +32,7 @@ func TestCreate(t *testing.T) {
 		lbDal.EXPECT().Create(gomock.Any()).Return(nil)
 
 		service := leaderboard.NewController(lbDal)
-		_, err := service.Create()
+		_, err := service.Create("test", 10, leaderboard.LeaderboardModeHighscore)
 		assert.Nil(t, err)
 	})
 }

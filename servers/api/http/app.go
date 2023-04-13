@@ -1,58 +1,56 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/byyjoww/leaderboard/bll/leaderboard"
-	"github.com/byyjoww/leaderboard/bll/player"
+	"github.com/byyjoww/leaderboard/bll/participant"
 	"github.com/byyjoww/leaderboard/config"
-	"github.com/byyjoww/leaderboard/dal"
-	"github.com/byyjoww/leaderboard/internal/app"
-	"github.com/byyjoww/leaderboard/internal/decoder"
+	"github.com/byyjoww/leaderboard/logging"
 	"github.com/byyjoww/leaderboard/servers/api/handler"
-	"github.com/sirupsen/logrus"
+	"github.com/byyjoww/leaderboard/services/http/decoder"
+	"github.com/byyjoww/leaderboard/services/http/server"
+	appMiddleware "github.com/byyjoww/leaderboard/services/http/server/middleware"
 )
 
-func New(logger logrus.FieldLogger, config config.Config) *app.App {
-	a := app.NewApp(logger, app.Config{
-		Address: config.Http.Address,
-		Auth: app.Auth{
-			Enabled: config.Http.Auth.Enabled,
-			User:    config.Http.Auth.User,
-			Pass:    config.Http.Auth.Pass,
-		},
-	})
+type Controllers struct {
+	Leaderboard leaderboard.LeaderboardController
+	Participant participant.ParticipantController
+}
 
-	dalFactory := dal.NewPgFactory(dal.Config{
-		User:              config.Postgres.User,
-		Pass:              config.Postgres.Pass,
-		Host:              config.Postgres.Host,
-		Port:              config.Postgres.Port,
-		Database:          config.Postgres.Database,
-		PoolSize:          config.Postgres.PoolSize,
-		MaxRetries:        config.Postgres.MaxRetries,
-		ConnectionTimeout: config.Postgres.ConnectionTimeout,
-	})
-
-	lbDal := dalFactory.NewLeaderboardDAL()
-	playerDal := dalFactory.NewPlayerDAL()
-
-	lbController := leaderboard.NewController(lbDal)
-	playerController := player.NewController(playerDal)
-
+func New(logger logging.Logger, config config.HTTPServer, controllers Controllers) server.App {
+	httpLogger := logging.NewHttpLogger(logger)
 	decoder := decoder.New()
-	api := a.Router().Subrouter("/api")
-	api.AddHandlers(
-		// Leaderboards
-		handler.NewCreateLeaderboardHandler(logger, lbController),
-		handler.NewGetLeaderboardHandler(logger, decoder, lbController),
-		handler.NewListLeaderboardsHandler(logger, decoder, lbController),
-		handler.NewRemoveLeaderboardHandler(logger, decoder, lbController),
 
-		// Players
-		handler.NewUpdateScoreHandler(logger, decoder, playerController),
-		handler.NewGetPlayerHandler(logger, decoder, playerController),
-		handler.NewListPlayersHandler(logger, decoder, playerController),
-		handler.NewCreatePlayerHandler(logger, decoder, playerController),
-		handler.NewRemovePlayerHandler(logger, decoder, playerController),
+	mux := server.NewMux(httpLogger).WithMiddlewares(
+		appMiddleware.NewPanicLoggerMiddleware(),
+	).PathPrefixSubrouter("/api/v1")
+
+	mux.WithMiddlewares(
+		appMiddleware.NewBasicAuthMiddleware(
+			config.Auth.User,
+			config.Auth.Pass,
+			config.Auth.Enabled,
+		),
 	)
-	return a
+
+	mux.AddHandlers(
+		// Leaderboards
+		handler.NewCreateLeaderboardHandler(decoder, controllers.Leaderboard),
+		handler.NewGetLeaderboardHandler(decoder, controllers.Leaderboard),
+		handler.NewListLeaderboardsHandler(decoder, controllers.Leaderboard),
+		handler.NewRemoveLeaderboardHandler(decoder, controllers.Leaderboard),
+
+		// Participants
+		handler.NewUpdateScoreHandler(decoder, controllers.Participant),
+		handler.NewGetParticipantHandler(decoder, controllers.Participant),
+		handler.NewListParticipantsHandler(decoder, controllers.Participant),
+		handler.NewCreateParticipantHandler(decoder, controllers.Participant),
+		handler.NewRemoveParticipantHandler(decoder, controllers.Participant),
+	)
+
+	return &http.Server{
+		Addr:    config.Address,
+		Handler: mux.WithMetrics(),
+	}
 }

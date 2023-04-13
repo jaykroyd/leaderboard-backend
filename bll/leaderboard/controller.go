@@ -5,13 +5,10 @@ import (
 	"github.com/google/uuid"
 )
 
-type LeaderboardController interface {
-	List(limit int, offset int) ([]*leaderboard.Leaderboard, error)
-	Get(leaderboardId uuid.UUID) (*leaderboard.Leaderboard, error)
-	Create() (*leaderboard.Leaderboard, error)
-	Remove(leaderboardId uuid.UUID) error
-	Reset(leaderboardId uuid.UUID) error
-}
+const (
+	LeaderboardModeHighscore   int = 0
+	LeaderboardModeIncremental int = 1
+)
 
 type Controller struct {
 	dal leaderboard.LeaderboardDAL
@@ -31,8 +28,16 @@ func (c *Controller) List(limit int, offset int) ([]*leaderboard.Leaderboard, er
 	return c.dal.List(limit, offset)
 }
 
-func (c *Controller) Create() (*leaderboard.Leaderboard, error) {
-	lb := &leaderboard.Leaderboard{}
+func (c *Controller) ListByMode(mode int, limit int, offset int) ([]*leaderboard.Leaderboard, error) {
+	return c.dal.ListByMode(mode, limit, offset)
+}
+
+func (c *Controller) Create(name string, capacity int64, mode int) (*leaderboard.Leaderboard, error) {
+	lb := &leaderboard.Leaderboard{
+		Name:     name,
+		Mode:     mode,
+		Capacity: capacity,
+	}
 	return lb, c.dal.Create(lb)
 }
 

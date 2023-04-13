@@ -13,30 +13,30 @@ import (
 )
 
 // MockPlayerDAL is a mock of PlayerDAL interface.
-type MockPlayerDAL struct {
+type MockParticipantDAL struct {
 	ctrl     *gomock.Controller
 	recorder *MockPlayerDALMockRecorder
 }
 
 // MockPlayerDALMockRecorder is the mock recorder for MockPlayerDAL.
 type MockPlayerDALMockRecorder struct {
-	mock *MockPlayerDAL
+	mock *MockParticipantDAL
 }
 
 // NewMockPlayerDAL creates a new mock instance.
-func NewMockPlayerDAL(ctrl *gomock.Controller) *MockPlayerDAL {
-	mock := &MockPlayerDAL{ctrl: ctrl}
+func NewMockParticipantDAL(ctrl *gomock.Controller) *MockParticipantDAL {
+	mock := &MockParticipantDAL{ctrl: ctrl}
 	mock.recorder = &MockPlayerDALMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockPlayerDAL) EXPECT() *MockPlayerDALMockRecorder {
+func (m *MockParticipantDAL) EXPECT() *MockPlayerDALMockRecorder {
 	return m.recorder
 }
 
 // Create mocks base method.
-func (m *MockPlayerDAL) Create(player *player.Player) error {
+func (m *MockParticipantDAL) Create(player *player.Player) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", player)
 	ret0, _ := ret[0].(error)
@@ -46,11 +46,11 @@ func (m *MockPlayerDAL) Create(player *player.Player) error {
 // Create indicates an expected call of Create.
 func (mr *MockPlayerDALMockRecorder) Create(player interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockPlayerDAL)(nil).Create), player)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockParticipantDAL)(nil).Create), player)
 }
 
 // Delete mocks base method.
-func (m *MockPlayerDAL) Delete(player *player.Player) error {
+func (m *MockParticipantDAL) Delete(player *player.Player) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", player)
 	ret0, _ := ret[0].(error)
@@ -60,11 +60,11 @@ func (m *MockPlayerDAL) Delete(player *player.Player) error {
 // Delete indicates an expected call of Delete.
 func (mr *MockPlayerDALMockRecorder) Delete(player interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockPlayerDAL)(nil).Delete), player)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockParticipantDAL)(nil).Delete), player)
 }
 
 // Exists mocks base method.
-func (m *MockPlayerDAL) Exists(name string) (bool, error) {
+func (m *MockParticipantDAL) Exists(name string) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Exists", name)
 	ret0, _ := ret[0].(bool)
@@ -75,11 +75,11 @@ func (m *MockPlayerDAL) Exists(name string) (bool, error) {
 // Exists indicates an expected call of Exists.
 func (mr *MockPlayerDALMockRecorder) Exists(name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exists", reflect.TypeOf((*MockPlayerDAL)(nil).Exists), name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exists", reflect.TypeOf((*MockParticipantDAL)(nil).Exists), name)
 }
 
 // GetByPK mocks base method.
-func (m *MockPlayerDAL) GetByPK(id uuid.UUID) (*player.Player, error) {
+func (m *MockParticipantDAL) GetByPK(id uuid.UUID) (*player.Player, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByPK", id)
 	ret0, _ := ret[0].(*player.Player)
@@ -90,11 +90,11 @@ func (m *MockPlayerDAL) GetByPK(id uuid.UUID) (*player.Player, error) {
 // GetByPK indicates an expected call of GetByPK.
 func (mr *MockPlayerDALMockRecorder) GetByPK(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByPK", reflect.TypeOf((*MockPlayerDAL)(nil).GetByPK), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByPK", reflect.TypeOf((*MockParticipantDAL)(nil).GetByPK), id)
 }
 
 // GetRankedByPK mocks base method.
-func (m *MockPlayerDAL) GetRankedByPK(id uuid.UUID) (*player.RankedPlayer, error) {
+func (m *MockParticipantDAL) GetRankedByPK(id uuid.UUID) (*player.RankedPlayer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRankedByPK", id)
 	ret0, _ := ret[0].(*player.RankedPlayer)
@@ -105,11 +105,11 @@ func (m *MockPlayerDAL) GetRankedByPK(id uuid.UUID) (*player.RankedPlayer, error
 // GetRankedByPK indicates an expected call of GetRankedByPK.
 func (mr *MockPlayerDALMockRecorder) GetRankedByPK(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRankedByPK", reflect.TypeOf((*MockPlayerDAL)(nil).GetRankedByPK), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRankedByPK", reflect.TypeOf((*MockParticipantDAL)(nil).GetRankedByPK), id)
 }
 
 // List mocks base method.
-func (m *MockPlayerDAL) List(leaderboardId uuid.UUID, limit, offset int) ([]*player.RankedPlayer, error) {
+func (m *MockParticipantDAL) List(leaderboardId uuid.UUID, limit, offset int) ([]*player.RankedPlayer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", leaderboardId, limit, offset)
 	ret0, _ := ret[0].([]*player.RankedPlayer)
@@ -120,11 +120,11 @@ func (m *MockPlayerDAL) List(leaderboardId uuid.UUID, limit, offset int) ([]*pla
 // List indicates an expected call of List.
 func (mr *MockPlayerDALMockRecorder) List(leaderboardId, limit, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockPlayerDAL)(nil).List), leaderboardId, limit, offset)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockParticipantDAL)(nil).List), leaderboardId, limit, offset)
 }
 
 // UpdateScore mocks base method.
-func (m *MockPlayerDAL) UpdateScore(player *player.Player) error {
+func (m *MockParticipantDAL) UpdateScore(player *player.Player) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateScore", player)
 	ret0, _ := ret[0].(error)
@@ -134,19 +134,5 @@ func (m *MockPlayerDAL) UpdateScore(player *player.Player) error {
 // UpdateScore indicates an expected call of UpdateScore.
 func (mr *MockPlayerDALMockRecorder) UpdateScore(player interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateScore", reflect.TypeOf((*MockPlayerDAL)(nil).UpdateScore), player)
-}
-
-// UpdateScoreForLeaderboard mocks base method.
-func (m *MockPlayerDAL) UpdateScoreForLeaderboard(leaderboardId uuid.UUID, score int) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateScoreForLeaderboard", leaderboardId, score)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpdateScoreForLeaderboard indicates an expected call of UpdateScoreForLeaderboard.
-func (mr *MockPlayerDALMockRecorder) UpdateScoreForLeaderboard(leaderboardId, score interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateScoreForLeaderboard", reflect.TypeOf((*MockPlayerDAL)(nil).UpdateScoreForLeaderboard), leaderboardId, score)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateScore", reflect.TypeOf((*MockParticipantDAL)(nil).UpdateScore), player)
 }

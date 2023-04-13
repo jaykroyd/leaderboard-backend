@@ -1,53 +1,38 @@
 package cmd
 
 import (
-	"errors"
-
 	"github.com/byyjoww/leaderboard/config"
-	"github.com/byyjoww/leaderboard/constants"
-	"github.com/byyjoww/leaderboard/servers/api/http"
-	"github.com/sirupsen/logrus"
+	"github.com/byyjoww/leaderboard/logging"
+	"github.com/spf13/cobra"
 )
 
-func Execute() {
-	config := config.BuildConfig()
-	logger := configureLogger(config)
-	app := http.New(logger, config)
-	app.ListenAndServe()
-}
+var (
+	startCmd = &cobra.Command{
+		Use:   "start",
+		Short: "Starts a new server",
+		Run: func(cmd *cobra.Command, _ []string) {
+			var (
+				cfg    = config.Build()
+				logger = logging.NewLoggr(cfg.Logging)
+			)
 
-func configureLogger(configs config.Config) logrus.FieldLogger {
-	logger := logrus.New()
+			logger.Info("Initializing app")
 
-	level, err := getLogLevel(configs.Logging.Level)
-	if err != nil {
-		panic("failed to get log level")
+			switch startFlags.serverType {
+			case serverTypeApi:
+				startAPI(logger, cfg)
+			}
+		},
 	}
 
-	logrus.SetLevel(level)
-	logger.SetLevel(level)
+	startFlags = struct {
+		serverType string
+	}{}
 
-	logger.Info("Initiating program")
-	return logger
-}
+	serverTypeApi string = "api"
+)
 
-func getLogLevel(level string) (logrus.Level, error) {
-	switch level {
-	case constants.LogLevelPanic:
-		return logrus.PanicLevel, nil
-	case constants.LogLevelFatal:
-		return logrus.FatalLevel, nil
-	case constants.LogLevelError:
-		return logrus.ErrorLevel, nil
-	case constants.LogLevelWarn:
-		return logrus.WarnLevel, nil
-	case constants.LogLevelInfo:
-		return logrus.InfoLevel, nil
-	case constants.LogLevelDebug:
-		return logrus.DebugLevel, nil
-	case constants.LogLevelTrace:
-		return logrus.TraceLevel, nil
-	default:
-		return 0, errors.New("unable to determine logging level")
-	}
+func init() {
+	RootCmd.AddCommand(startCmd)
+	startCmd.Flags().StringVar(&startFlags.serverType, "type", serverTypeApi, "The server type to initialize")
 }

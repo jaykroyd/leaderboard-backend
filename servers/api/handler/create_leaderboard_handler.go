@@ -1,32 +1,34 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/byyjoww/leaderboard/bll/leaderboard"
-	"github.com/byyjoww/leaderboard/internal/app"
-	"github.com/sirupsen/logrus"
+	leaderboardDal "github.com/byyjoww/leaderboard/dal/leaderboard"
+	app "github.com/byyjoww/leaderboard/services/http"
+	"github.com/byyjoww/leaderboard/services/http/server"
 )
 
 type CreateLeaderboardHandler struct {
-	logger     logrus.FieldLogger
-	controller leaderboard.LeaderboardController
+	decoder    server.Decoder
+	controller leaderboard.Creator
 }
 
-func NewCreateLeaderboardHandler(logger logrus.FieldLogger, controller leaderboard.LeaderboardController) *CreateLeaderboardHandler {
-	h := &CreateLeaderboardHandler{
-		logger:     logger,
+type CreateLeaderboardRequest struct {
+	Name     string `json:"name"`
+	Capacity int64  `json:"capacity"`
+	Mode     int    `json:"mode"`
+}
+
+type CreateLeaderboardResponse struct {
+	Leaderboard *leaderboardDal.Leaderboard `json:"leaderboard"`
+}
+
+func NewCreateLeaderboardHandler(decoder server.Decoder, controller leaderboard.Creator) *CreateLeaderboardHandler {
+	return &CreateLeaderboardHandler{
+		decoder:    decoder,
 		controller: controller,
 	}
-
-	h.logger = h.logger.WithFields(logrus.Fields{
-		"source": fmt.Sprintf("%T", h),
-		"method": h.GetMethod(),
-		"route":  h.GetPath(),
-	})
-
-	return h
 }
 
 func (h *CreateLeaderboardHandler) GetMethod() string {
@@ -34,15 +36,24 @@ func (h *CreateLeaderboardHandler) GetMethod() string {
 }
 
 func (h *CreateLeaderboardHandler) GetPath() string {
-	return "/leaderboard"
+	return "/leaderboards"
 }
 
-func (h *CreateLeaderboardHandler) Handle(r *http.Request) app.Response {
-	leaderboard, err := h.controller.Create()
-	if err != nil {
-		return app.NewInternalServerError(err)
+func (h *CreateLeaderboardHandler) Handle(logger app.Logger, r *http.Request) server.Response {
+	req := CreateLeaderboardRequest{}
+	if err := h.decoder.DecodeRequest(r, &req); err != nil {
+		logger.WithError(err).Error("error decoding request")
+		return NewBadRequest(err)
 	}
 
-	h.logger.Info("new leaderboard created successfully")
-	return app.NewStatusOK(leaderboard)
+	leaderboard, err := h.controller.Create(req.Name, req.Capacity, req.Mode)
+	if err != nil {
+		logger.WithError(err).Error("failed to create leaderboard")
+		return NewInternalServerError(err)
+	}
+
+	logger.Info("new leaderboard created successfully")
+	return NewStatusOK(CreateLeaderboardResponse{
+		Leaderboard: leaderboard,
+	})
 }

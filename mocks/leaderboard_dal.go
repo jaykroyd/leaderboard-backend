@@ -93,6 +93,21 @@ func (mr *MockLeaderboardDALMockRecorder) List(limit, offset interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLeaderboardDAL)(nil).List), limit, offset)
 }
 
+// ListByMode mocks base method.
+func (m *MockLeaderboardDAL) ListByMode(mode, limit, offset int) ([]*leaderboard.Leaderboard, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListByMode", mode, limit, offset)
+	ret0, _ := ret[0].([]*leaderboard.Leaderboard)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListByMode indicates an expected call of ListByMode.
+func (mr *MockLeaderboardDALMockRecorder) ListByMode(mode, limit, offset interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByMode", reflect.TypeOf((*MockLeaderboardDAL)(nil).ListByMode), mode, limit, offset)
+}
+
 // Reset mocks base method.
 func (m *MockLeaderboardDAL) Reset(leaderboardId uuid.UUID) error {
 	m.ctrl.T.Helper()

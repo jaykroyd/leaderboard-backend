@@ -1,39 +1,35 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/byyjoww/leaderboard/bll/leaderboard"
-	"github.com/byyjoww/leaderboard/internal/app"
-	"github.com/sirupsen/logrus"
+	leaderboardDal "github.com/byyjoww/leaderboard/dal/leaderboard"
+	"github.com/byyjoww/leaderboard/logging"
+	app "github.com/byyjoww/leaderboard/services/http"
+	"github.com/byyjoww/leaderboard/services/http/server"
 )
 
 type ListLeaderboardHandler struct {
-	logger     logrus.FieldLogger
-	decoder    app.Decoder
-	controller leaderboard.LeaderboardController
+	decoder    server.Decoder
+	controller leaderboard.Provider
 }
 
-type ListLeaderboardRequest struct {
+type ListLeaderboardsRequest struct {
+	Mode   int `json:"mode"`
 	Limit  int `json:"limit"`
 	Offset int `json:"offset"`
 }
 
-func NewListLeaderboardsHandler(logger logrus.FieldLogger, decoder app.Decoder, controller leaderboard.LeaderboardController) *ListLeaderboardHandler {
-	h := &ListLeaderboardHandler{
-		logger:     logger,
+type ListLeaderboardsResponse struct {
+	Leaderboards []*leaderboardDal.Leaderboard `json:"leaderboards"`
+}
+
+func NewListLeaderboardsHandler(decoder server.Decoder, controller leaderboard.Provider) *ListLeaderboardHandler {
+	return &ListLeaderboardHandler{
 		decoder:    decoder,
 		controller: controller,
 	}
-
-	h.logger = h.logger.WithFields(logrus.Fields{
-		"source": fmt.Sprintf("%T", h),
-		"method": h.GetMethod(),
-		"route":  h.GetPath(),
-	})
-
-	return h
 }
 
 func (h *ListLeaderboardHandler) GetMethod() string {
@@ -41,21 +37,32 @@ func (h *ListLeaderboardHandler) GetMethod() string {
 }
 
 func (h *ListLeaderboardHandler) GetPath() string {
-	return "/leaderboard/list"
+	return "/leaderboards"
 }
 
-func (h *ListLeaderboardHandler) Handle(r *http.Request) app.Response {
-	req := ListLeaderboardRequest{}
+func (h *ListLeaderboardHandler) Handle(logger app.Logger, r *http.Request) server.Response {
+	req := ListLeaderboardsRequest{}
 	if err := h.decoder.DecodeRequest(r, &req); err != nil {
-		h.logger.WithError(err).Error("error decoding request")
-		return app.NewBadRequest(err)
+		logger.WithError(err).Error("error decoding request")
+		return NewBadRequest(err)
 	}
 
-	lbs, err := h.controller.List(req.Limit, req.Offset)
+	hasMode := r.URL.Query().Has("mode")
+	var leaderboards []*leaderboardDal.Leaderboard
+	var err error
+
+	if hasMode {
+		leaderboards, err = h.controller.ListByMode(req.Mode, req.Limit, req.Offset)
+	} else {
+		leaderboards, err = h.controller.List(req.Limit, req.Offset)
+	}
+
 	if err != nil {
-		return app.NewInternalServerError(err)
+		return NewInternalServerError(err)
 	}
 
-	h.logger.WithFields(logrus.Fields{"leaderboards": lbs, "amount": len(lbs)}).Info("successfully retrieved leaderboards")
-	return app.NewStatusOK(lbs)
+	logger.WithFields(logging.Fields{"leaderboards": leaderboards, "amount": len(leaderboards)}).Info("successfully retrieved leaderboards")
+	return NewStatusOK(ListLeaderboardsResponse{
+		Leaderboards: leaderboards,
+	})
 }

@@ -14,6 +14,11 @@ type Logging struct {
 }
 
 type HTTP struct {
+	API       HTTPServer `mapstructure:"api"`
+	Telemetry HTTPServer `mapstructure:"telemetry"`
+}
+
+type HTTPServer struct {
 	Address string        `mapstructure:"address"`
 	Auth    Authorization `mapstructure:"auth"`
 }

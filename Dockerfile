@@ -23,5 +23,6 @@ WORKDIR /root/
 COPY --from=build /go/bin/leaderboard /usr/local/bin/
 RUN mkdir ./config
 COPY config/config.yaml ./config/
+EXPOSE 8080 9800
 
-CMD ["leaderboard"]
+CMD ["leaderboard", "start", "--type=api"]

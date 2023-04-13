@@ -18,6 +18,7 @@ const (
 )
 
 var (
-	ErrPlayerNotFound      = errors.New("player not found in dal")
-	ErrLeaderboardNotFound = errors.New("leaderboard not found in dal")
+	ErrConnectingToDatabase = errors.New("failed to establish db connection")
+	ErrParticipantNotFound  = errors.New("participant not found in dal")
+	ErrLeaderboardNotFound  = errors.New("leaderboard not found in dal")
 )

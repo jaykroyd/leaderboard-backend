@@ -1,39 +1,32 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/byyjoww/leaderboard/bll/leaderboard"
-	"github.com/byyjoww/leaderboard/internal/app"
+	leaderboardDal "github.com/byyjoww/leaderboard/dal/leaderboard"
+	"github.com/byyjoww/leaderboard/logging"
+	app "github.com/byyjoww/leaderboard/services/http"
+	"github.com/byyjoww/leaderboard/services/http/server"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
+	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 )
 
 type GetLeaderboardHandler struct {
-	logger     logrus.FieldLogger
-	decoder    app.Decoder
-	controller leaderboard.LeaderboardController
+	decoder    server.Decoder
+	controller leaderboard.Provider
 }
 
-type GetLeaderboardRequest struct {
-	LeaderboardID uuid.UUID `json:"leaderboard_id"`
+type GetLeaderboardResponse struct {
+	Leaderboard *leaderboardDal.Leaderboard `json:"leaderboard"`
 }
 
-func NewGetLeaderboardHandler(logger logrus.FieldLogger, decoder app.Decoder, controller leaderboard.LeaderboardController) *GetLeaderboardHandler {
-	h := &GetLeaderboardHandler{
-		logger:     logger,
+func NewGetLeaderboardHandler(decoder server.Decoder, controller leaderboard.Provider) *GetLeaderboardHandler {
+	return &GetLeaderboardHandler{
 		decoder:    decoder,
 		controller: controller,
 	}
-
-	h.logger = h.logger.WithFields(logrus.Fields{
-		"source": fmt.Sprintf("%T", h),
-		"method": h.GetMethod(),
-		"route":  h.GetPath(),
-	})
-
-	return h
 }
 
 func (h *GetLeaderboardHandler) GetMethod() string {
@@ -41,22 +34,31 @@ func (h *GetLeaderboardHandler) GetMethod() string {
 }
 
 func (h *GetLeaderboardHandler) GetPath() string {
-	return "/leaderboard"
+	return "/leaderboards/{id}"
 }
 
-func (h *GetLeaderboardHandler) Handle(r *http.Request) app.Response {
-	req := GetLeaderboardRequest{}
-	if err := h.decoder.DecodeRequest(r, &req); err != nil {
-		h.logger.WithError(err).Error("error decoding request")
-		return app.NewBadRequest(err)
-	}
+func (h *GetLeaderboardHandler) Handle(logger app.Logger, r *http.Request) server.Response {
+	vars := mux.Vars(r)
+	leaderboardIdString := vars["id"]
 
-	h.logger.WithFields(logrus.Fields{"request": req}).Info("getting leaderboard")
-	lb, err := h.controller.Get(req.LeaderboardID)
+	logger.WithFields(logging.Fields{
+		"request": leaderboardIdString,
+	}).Info("getting leaderboard")
+
+	leaderboardId, err := uuid.Parse(leaderboardIdString)
 	if err != nil {
-		return app.NewInternalServerError(err)
+		if err != nil {
+			return NewBadRequest(errors.Wrap(err, "failed to parse leaderboard id"))
+		}
 	}
 
-	h.logger.WithFields(logrus.Fields{"leaderboard": lb}).Infof("successfully retrieved leaderboard")
-	return app.NewStatusOK(lb)
+	leaderboard, err := h.controller.Get(leaderboardId)
+	if err != nil {
+		return NewInternalServerError(err)
+	}
+
+	logger.WithFields(logging.Fields{"leaderboard": leaderboard}).Infof("successfully retrieved leaderboard")
+	return NewStatusOK(GetLeaderboardResponse{
+		Leaderboard: leaderboard,
+	})
 }

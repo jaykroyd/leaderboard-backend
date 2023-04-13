@@ -3,7 +3,7 @@ DATABASE=$(if $(DB_DATABASE),$(DB_DATABASE),'postgres')
 USER=$(if $(DB_USER),$(DB_USER),'user')
 PASSWORD=$(if $(DB_PASSWORD),$(DB_PASSWORD),'')
 
-run:
+run-with-deps:
 	@make kill-deps
 	@make deps
 	@go run .

@@ -1,15 +1,15 @@
 package dal
 
 import (
+	"github.com/byyjoww/leaderboard/logging"
 	"github.com/go-pg/pg"
-	"github.com/sirupsen/logrus"
 )
 
 type PgLogger struct {
-	logger logrus.FieldLogger
+	logger logging.Logger
 }
 
-func NewPgLogger(logger logrus.FieldLogger) *PgLogger {
+func NewPgLogger(logger logging.Logger) *PgLogger {
 	return &PgLogger{
 		logger: logger,
 	}
