@@ -93,6 +93,21 @@ func (mr *MockParticipantDALMockRecorder) GetByPK(id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByPK", reflect.TypeOf((*MockParticipantDAL)(nil).GetByPK), id)
 }
 
+// GetCount mocks base method.
+func (m *MockParticipantDAL) GetCount(leaderboardId uuid.UUID) (int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCount", leaderboardId)
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCount indicates an expected call of GetCount.
+func (mr *MockParticipantDALMockRecorder) GetCount(leaderboardId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCount", reflect.TypeOf((*MockParticipantDAL)(nil).GetCount), leaderboardId)
+}
+
 // GetRankedByPK mocks base method.
 func (m *MockParticipantDAL) GetRankedByPK(id uuid.UUID) (*participant.RankedParticipant, error) {
 	m.ctrl.T.Helper()

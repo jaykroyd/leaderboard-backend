@@ -17,11 +17,13 @@ func TestGet(t *testing.T) {
 	t.Parallel()
 
 	var (
-		pDal *mocks.MockParticipantDAL
+		pDal  *mocks.MockParticipantDAL
+		lbDal *mocks.MockLeaderboardDAL
 	)
 
 	setup := func(ctrl *gomock.Controller) {
 		pDal = mocks.NewMockParticipantDAL(ctrl)
+		lbDal = mocks.NewMockLeaderboardDAL(ctrl)
 	}
 
 	t.Run("test_success", func(t *testing.T) {
@@ -41,7 +43,7 @@ func TestGet(t *testing.T) {
 
 		pDal.EXPECT().GetByPK(expected.ID).Return(expected, nil)
 
-		service := participant.NewController(pDal)
+		service := participant.NewController(pDal, lbDal)
 		lb, err := service.Get(expected.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, expected, lb)
@@ -52,11 +54,13 @@ func TestList(t *testing.T) {
 	t.Parallel()
 
 	var (
-		pDal *mocks.MockParticipantDAL
+		pDal  *mocks.MockParticipantDAL
+		lbDal *mocks.MockLeaderboardDAL
 	)
 
 	setup := func(ctrl *gomock.Controller) {
 		pDal = mocks.NewMockParticipantDAL(ctrl)
+		lbDal = mocks.NewMockLeaderboardDAL(ctrl)
 	}
 
 	t.Run("test_success", func(t *testing.T) {
@@ -79,7 +83,7 @@ func TestList(t *testing.T) {
 
 		pDal.EXPECT().List(leaderboardId, 10, 0).Return(expected, nil)
 
-		service := participant.NewController(pDal)
+		service := participant.NewController(pDal, lbDal)
 		lb, err := service.List(leaderboardId, 10, 0)
 		assert.Nil(t, err)
 		assert.Equal(t, expected, lb)
@@ -90,11 +94,13 @@ func TestUpdateScore(t *testing.T) {
 	t.Parallel()
 
 	var (
-		pDal *mocks.MockParticipantDAL
+		pDal  *mocks.MockParticipantDAL
+		lbDal *mocks.MockLeaderboardDAL
 	)
 
 	setup := func(ctrl *gomock.Controller) {
 		pDal = mocks.NewMockParticipantDAL(ctrl)
+		lbDal = mocks.NewMockLeaderboardDAL(ctrl)
 	}
 
 	t.Run("test_success", func(t *testing.T) {
@@ -119,7 +125,7 @@ func TestUpdateScore(t *testing.T) {
 			pDal.EXPECT().GetByPK(p.ID).Return(p, nil)
 			pDal.EXPECT().UpdateScore(p).Return(nil)
 
-			service := participant.NewController(pDal)
+			service := participant.NewController(pDal, lbDal)
 			after, err := service.UpdateScore(p.ID, a)
 			assert.Nil(t, err)
 			assert.Equal(t, expected[i], after)
@@ -131,11 +137,13 @@ func TestCreate(t *testing.T) {
 	t.Parallel()
 
 	var (
-		pDal *mocks.MockParticipantDAL
+		pDal  *mocks.MockParticipantDAL
+		lbDal *mocks.MockLeaderboardDAL
 	)
 
 	setup := func(ctrl *gomock.Controller) {
 		pDal = mocks.NewMockParticipantDAL(ctrl)
+		lbDal = mocks.NewMockLeaderboardDAL(ctrl)
 	}
 
 	t.Run("test_success", func(t *testing.T) {
@@ -152,8 +160,8 @@ func TestCreate(t *testing.T) {
 
 		pDal.EXPECT().Create(gomock.Any()).Return(nil)
 
-		service := participant.NewController(pDal)
-		participant, err := service.Create(expected.LeaderboardID, "test")
+		service := participant.NewController(pDal, lbDal)
+		participant, err := service.Create(expected.LeaderboardID, "123", "test", map[string]string{})
 		assert.Nil(t, err)
 		assert.Equal(t, expected, participant)
 	})
@@ -163,11 +171,13 @@ func TestRemove(t *testing.T) {
 	t.Parallel()
 
 	var (
-		pDal *mocks.MockParticipantDAL
+		pDal  *mocks.MockParticipantDAL
+		lbDal *mocks.MockLeaderboardDAL
 	)
 
 	setup := func(ctrl *gomock.Controller) {
 		pDal = mocks.NewMockParticipantDAL(ctrl)
+		lbDal = mocks.NewMockLeaderboardDAL(ctrl)
 	}
 
 	t.Run("test_success", func(t *testing.T) {
@@ -184,7 +194,7 @@ func TestRemove(t *testing.T) {
 		pDal.EXPECT().GetByPK(expected.ID).Return(expected, nil)
 		pDal.EXPECT().Delete(expected).Return(nil)
 
-		service := participant.NewController(pDal)
+		service := participant.NewController(pDal, lbDal)
 		err := service.Remove(expected.ID)
 		assert.Nil(t, err)
 	})

@@ -13,6 +13,7 @@ type ParticipantDAL interface {
 	Exists(name string) (bool, error)
 	GetByPK(id uuid.UUID) (*Participant, error)
 	GetRankedByPK(id uuid.UUID) (*RankedParticipant, error)
+	GetCount(leaderboardId uuid.UUID) (int, error)
 	List(leaderboardId uuid.UUID, limit int, offset int) ([]*RankedParticipant, error)
 	Create(participant *Participant) error
 	UpdateScore(participant *Participant) error
@@ -58,6 +59,12 @@ func (d *DAL) GetRankedByPK(id uuid.UUID) (*RankedParticipant, error) {
 		return nil, err
 	}
 	return participant, nil
+}
+
+func (d *DAL) GetCount(leaderboardId uuid.UUID) (int, error) {
+	return d.db.Model((*Participant)(nil)).
+		Where("leaderboard_id = ?", leaderboardId).
+		Count()
 }
 
 func (d *DAL) List(leaderboardId uuid.UUID, limit int, offset int) ([]*RankedParticipant, error) {

@@ -6,10 +6,10 @@ import (
 )
 
 type Leaderboard struct {
-	ID        uuid.UUID   `sql:",type:uuid,pk" json:"id"`
-	Name      string      `sql:"name" json:"name"`
-	Mode      int         `sql:"mode" json:"mode"`
-	Capacity  int64       `sql:"capacity" json:"capacity"`
-	CreatedAt pg.NullTime `sql:"created_at" json:"created_at"`
-	UpdatedAt pg.NullTime `sql:"updated_at" json:"updated_at"`
+	ID        uuid.UUID   `sql:",type:uuid,pk"`
+	Name      string      `sql:"name"`
+	Mode      int         `sql:"mode"`
+	Capacity  int         `sql:"capacity"`
+	CreatedAt pg.NullTime `sql:"created_at"`
+	UpdatedAt pg.NullTime `sql:"updated_at"`
 }

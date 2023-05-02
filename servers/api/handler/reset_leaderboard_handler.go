@@ -46,6 +46,7 @@ func (h *ResetLeaderboardHandler) Handle(logger app.Logger, r *http.Request) ser
 	logger.WithFields(logging.Fields{"request": req}).Info("resetting leaderboard")
 	err := h.controller.Reset(req.LeaderboardID)
 	if err != nil {
+		logger.WithError(err).Error("failed to reset leaderboard")
 		return NewInternalServerError(err)
 	}
 

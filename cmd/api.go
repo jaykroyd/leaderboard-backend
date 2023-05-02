@@ -36,7 +36,7 @@ func startAPI(logger logging.Logger, cfg config.Config) {
 
 	api := apiApp.New(logger, cfg.Http.API, apiApp.Controllers{
 		Leaderboard: leaderboard.NewController(lbDal),
-		Participant: participant.NewController(participantDal),
+		Participant: participant.NewController(participantDal, lbDal),
 	})
 
 	telemetry := telemetryApp.New(logger, cfg.Http.Telemetry)

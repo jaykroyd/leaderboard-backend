@@ -44,6 +44,7 @@ func (h *RemoveLeaderboardHandler) Handle(logger app.Logger, r *http.Request) se
 	logger.WithFields(logging.Fields{"request": req}).Info("deleting leaderboard")
 	err := h.controller.Remove(req.LeaderboardID)
 	if err != nil {
+		logger.WithError(err).Error("failed to delete leaderboard")
 		return NewInternalServerError(err)
 	}
 

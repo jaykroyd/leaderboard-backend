@@ -7,7 +7,7 @@ package mocks
 import (
 	reflect "reflect"
 
-	leaderboard "github.com/byyjoww/leaderboard/dal/leaderboard"
+	leaderboard "github.com/byyjoww/leaderboard/bll/leaderboard"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
 )
@@ -36,7 +36,7 @@ func (m *MockLeaderboardController) EXPECT() *MockLeaderboardControllerMockRecor
 }
 
 // Create mocks base method.
-func (m *MockLeaderboardController) Create(name string, capacity int64, mode int) (*leaderboard.Leaderboard, error) {
+func (m *MockLeaderboardController) Create(name string, capacity, mode int) (*leaderboard.Leaderboard, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", name, capacity, mode)
 	ret0, _ := ret[0].(*leaderboard.Leaderboard)
@@ -147,7 +147,7 @@ func (m *MockCreator) EXPECT() *MockCreatorMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockCreator) Create(name string, capacity int64, mode int) (*leaderboard.Leaderboard, error) {
+func (m *MockCreator) Create(name string, capacity, mode int) (*leaderboard.Leaderboard, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", name, capacity, mode)
 	ret0, _ := ret[0].(*leaderboard.Leaderboard)

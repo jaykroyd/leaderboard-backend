@@ -16,9 +16,14 @@ type CreateParticipantHandler struct {
 }
 
 type CreateParticipantRequest struct {
-	LeaderboardID uuid.UUID `json:"leaderboard_id"`
-	ID            string    `json:"id"`
-	Name          string    `json:"name"`
+	LeaderboardID uuid.UUID         `json:"leaderboard_id"`
+	ExternalID    string            `json:"external_id"`
+	Name          string            `json:"name"`
+	Metadata      map[string]string `json:"metadata"`
+}
+
+type CreateParticipantResponse struct {
+	Participant *participant.Participant `json:"participant"`
 }
 
 func NewCreateParticipantHandler(decoder server.Decoder, controller participant.ParticipantController) *CreateParticipantHandler {
@@ -44,11 +49,14 @@ func (h *CreateParticipantHandler) Handle(logger app.Logger, r *http.Request) se
 	}
 
 	logger.WithFields(logging.Fields{"request": req}).Info("creating new participant")
-	participant, err := h.controller.Create(req.LeaderboardID, req.Name)
+	participant, err := h.controller.Create(req.LeaderboardID, req.ExternalID, req.Name, req.Metadata)
 	if err != nil {
+		logger.WithError(err).Error("failed to create participant")
 		return NewInternalServerError(err)
 	}
 
 	logger.Info("new participant created successfully")
-	return NewStatusOK(participant)
+	return NewStatusOK(CreateParticipantResponse{
+		Participant: participant,
+	})
 }

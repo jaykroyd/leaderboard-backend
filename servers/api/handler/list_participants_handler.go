@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/byyjoww/leaderboard/bll/participant"
-	participantDal "github.com/byyjoww/leaderboard/dal/participant"
 	"github.com/byyjoww/leaderboard/logging"
 	app "github.com/byyjoww/leaderboard/services/http"
 	"github.com/byyjoww/leaderboard/services/http/server"
@@ -23,7 +22,7 @@ type ListParticipantsRequest struct {
 }
 
 type ListParticipantsResponse struct {
-	Participants []*participantDal.RankedParticipant `json:"participants"`
+	Participants []*participant.RankedParticipant `json:"participants"`
 }
 
 func NewListParticipantsHandler(decoder server.Decoder, controller participant.ParticipantController) *ListParticipantsHandler {
@@ -66,6 +65,7 @@ func (h *ListParticipantsHandler) Handle(logger app.Logger, r *http.Request) ser
 
 	participants, err := h.controller.List(leaderboardUUID, req.Limit, req.Offset)
 	if err != nil {
+		logger.WithError(err).Error("failed to retrieve participants")
 		return NewInternalServerError(err)
 	}
 
@@ -73,5 +73,7 @@ func (h *ListParticipantsHandler) Handle(logger app.Logger, r *http.Request) ser
 		"participants": participants,
 	}).Info("successfully retrieved participants")
 
-	return NewStatusOK(participants)
+	return NewStatusOK(ListParticipantsResponse{
+		Participants: participants,
+	})
 }

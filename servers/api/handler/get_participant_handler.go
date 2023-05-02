@@ -44,6 +44,7 @@ func (h *GetParticipantHandler) Handle(logger app.Logger, r *http.Request) serve
 	logger.WithFields(logging.Fields{"request": req}).Info("getting participant")
 	participant, err := h.controller.Get(req.ID)
 	if err != nil {
+		logger.WithError(err).Error("failed to retrieve participant")
 		return NewInternalServerError(err)
 	}
 

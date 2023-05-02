@@ -7,7 +7,7 @@ package mocks
 import (
 	reflect "reflect"
 
-	participant "github.com/byyjoww/leaderboard/dal/participant"
+	participant "github.com/byyjoww/leaderboard/bll/participant"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
 )
@@ -36,18 +36,18 @@ func (m *MockParticipantController) EXPECT() *MockParticipantControllerMockRecor
 }
 
 // Create mocks base method.
-func (m *MockParticipantController) Create(leaderboardId uuid.UUID, name string) (*participant.Participant, error) {
+func (m *MockParticipantController) Create(leaderboardId uuid.UUID, externalId, name string, metadata map[string]string) (*participant.Participant, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", leaderboardId, name)
+	ret := m.ctrl.Call(m, "Create", leaderboardId, externalId, name, metadata)
 	ret0, _ := ret[0].(*participant.Participant)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockParticipantControllerMockRecorder) Create(leaderboardId, name interface{}) *gomock.Call {
+func (mr *MockParticipantControllerMockRecorder) Create(leaderboardId, externalId, name, metadata interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockParticipantController)(nil).Create), leaderboardId, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockParticipantController)(nil).Create), leaderboardId, externalId, name, metadata)
 }
 
 // Get mocks base method.

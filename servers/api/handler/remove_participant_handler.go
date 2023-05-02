@@ -45,6 +45,7 @@ func (h *RemoveParticipantHandler) Handle(logger app.Logger, r *http.Request) se
 
 	err := h.controller.Remove(uuid.MustParse(participantID))
 	if err != nil {
+		logger.WithError(err).Error("failed to delete participant")
 		return NewInternalServerError(err)
 	}
 

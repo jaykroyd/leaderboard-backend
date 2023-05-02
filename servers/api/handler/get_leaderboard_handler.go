@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/byyjoww/leaderboard/bll/leaderboard"
-	leaderboardDal "github.com/byyjoww/leaderboard/dal/leaderboard"
 	"github.com/byyjoww/leaderboard/logging"
 	app "github.com/byyjoww/leaderboard/services/http"
 	"github.com/byyjoww/leaderboard/services/http/server"
@@ -19,7 +18,7 @@ type GetLeaderboardHandler struct {
 }
 
 type GetLeaderboardResponse struct {
-	Leaderboard *leaderboardDal.Leaderboard `json:"leaderboard"`
+	Leaderboard *leaderboard.Leaderboard `json:"leaderboard"`
 }
 
 func NewGetLeaderboardHandler(decoder server.Decoder, controller leaderboard.Provider) *GetLeaderboardHandler {
@@ -47,13 +46,13 @@ func (h *GetLeaderboardHandler) Handle(logger app.Logger, r *http.Request) serve
 
 	leaderboardId, err := uuid.Parse(leaderboardIdString)
 	if err != nil {
-		if err != nil {
-			return NewBadRequest(errors.Wrap(err, "failed to parse leaderboard id"))
-		}
+		logger.WithError(err).Error("failed to parse leaderboard id")
+		return NewBadRequest(errors.Wrap(err, "failed to parse leaderboard id"))
 	}
 
 	leaderboard, err := h.controller.Get(leaderboardId)
 	if err != nil {
+		logger.WithError(err).Error("failed to retrieve leaderboard")
 		return NewInternalServerError(err)
 	}
 

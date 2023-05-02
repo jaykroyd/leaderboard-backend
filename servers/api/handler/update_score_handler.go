@@ -55,6 +55,7 @@ func (h *UpdateScoreHandler) Handle(logger app.Logger, r *http.Request) server.R
 
 	score, err := h.controller.UpdateScore(uuid.MustParse(participantID), req.Amount)
 	if err != nil {
+		logger.WithError(err).Error("failed to update score")
 		return NewInternalServerError(err)
 	}
 

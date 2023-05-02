@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/byyjoww/leaderboard/bll/leaderboard"
-	leaderboardDal "github.com/byyjoww/leaderboard/dal/leaderboard"
 	app "github.com/byyjoww/leaderboard/services/http"
 	"github.com/byyjoww/leaderboard/services/http/server"
 )
@@ -16,12 +15,12 @@ type CreateLeaderboardHandler struct {
 
 type CreateLeaderboardRequest struct {
 	Name     string `json:"name"`
-	Capacity int64  `json:"capacity"`
+	Capacity int    `json:"capacity"`
 	Mode     int    `json:"mode"`
 }
 
 type CreateLeaderboardResponse struct {
-	Leaderboard *leaderboardDal.Leaderboard `json:"leaderboard"`
+	Leaderboard *leaderboard.Leaderboard `json:"leaderboard"`
 }
 
 func NewCreateLeaderboardHandler(decoder server.Decoder, controller leaderboard.Creator) *CreateLeaderboardHandler {

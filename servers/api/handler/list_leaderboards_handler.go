@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/byyjoww/leaderboard/bll/leaderboard"
-	leaderboardDal "github.com/byyjoww/leaderboard/dal/leaderboard"
 	"github.com/byyjoww/leaderboard/logging"
 	app "github.com/byyjoww/leaderboard/services/http"
 	"github.com/byyjoww/leaderboard/services/http/server"
@@ -22,7 +21,7 @@ type ListLeaderboardsRequest struct {
 }
 
 type ListLeaderboardsResponse struct {
-	Leaderboards []*leaderboardDal.Leaderboard `json:"leaderboards"`
+	Leaderboards []*leaderboard.Leaderboard `json:"leaderboards"`
 }
 
 func NewListLeaderboardsHandler(decoder server.Decoder, controller leaderboard.Provider) *ListLeaderboardHandler {
@@ -48,7 +47,7 @@ func (h *ListLeaderboardHandler) Handle(logger app.Logger, r *http.Request) serv
 	}
 
 	hasMode := r.URL.Query().Has("mode")
-	var leaderboards []*leaderboardDal.Leaderboard
+	var leaderboards []*leaderboard.Leaderboard
 	var err error
 
 	if hasMode {
@@ -58,6 +57,7 @@ func (h *ListLeaderboardHandler) Handle(logger app.Logger, r *http.Request) serv
 	}
 
 	if err != nil {
+		logger.WithError(err).Error("failed to retrieve leaderboards")
 		return NewInternalServerError(err)
 	}
 
