@@ -8,17 +8,13 @@ import (
 	app "github.com/byyjoww/leaderboard/services/http"
 	"github.com/byyjoww/leaderboard/services/http/server"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 )
 
 type ResetLeaderboardHandler struct {
 	decoder    server.Decoder
 	controller leaderboard.LeaderboardController
-}
-
-type ResetLeaderboardRequest struct {
-	LeaderboardID uuid.UUID `json:"leaderboard_id"`
-	Limit         int       `json:"limit"`
-	Offset        int       `json:"offset"`
 }
 
 func NewResetLeaderboardHandler(decoder server.Decoder, controller leaderboard.LeaderboardController) *ResetLeaderboardHandler {
@@ -33,23 +29,33 @@ func (h *ResetLeaderboardHandler) GetMethod() string {
 }
 
 func (h *ResetLeaderboardHandler) GetPath() string {
-	return "/leaderboard/reset"
+	return "/leaderboard/{leaderboard_id}/reset"
 }
 
 func (h *ResetLeaderboardHandler) Handle(logger app.Logger, r *http.Request) server.Response {
-	req := ResetLeaderboardRequest{}
-	if err := h.decoder.DecodeRequest(r, &req); err != nil {
-		logger.WithError(err).Error("error decoding request")
-		return NewBadRequest(err)
+	logger.Info("resetting leaderboard")
+
+	var (
+		vars          = mux.Vars(r)
+		leaderboardID = vars["leaderboard_id"]
+	)
+
+	logger = logger.WithFields(logging.Fields{
+		"leaderboard_id": leaderboardID,
+	})
+
+	leaderboardUUID, err := uuid.Parse(leaderboardID)
+	if err != nil {
+		logger.WithError(err).Error("failed to parse leaderboard id")
+		return NewBadRequest(errors.Wrap(err, "failed to parse leaderboard id"))
 	}
 
-	logger.WithFields(logging.Fields{"request": req}).Info("resetting leaderboard")
-	err := h.controller.Reset(req.LeaderboardID)
+	err = h.controller.Reset(r.Context(), leaderboardUUID)
 	if err != nil {
 		logger.WithError(err).Error("failed to reset leaderboard")
 		return NewInternalServerError(err)
 	}
 
-	logger.WithFields(logging.Fields{"leaderboard": req.LeaderboardID}).Info("successfully reset leaderboard")
+	logger.Info("successfully reset leaderboard")
 	return NewStatusOK("OK")
 }

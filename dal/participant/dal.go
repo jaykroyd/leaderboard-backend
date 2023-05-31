@@ -1,6 +1,7 @@
 package participant
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/byyjoww/leaderboard/constants"
@@ -10,14 +11,16 @@ import (
 )
 
 type ParticipantDAL interface {
-	Exists(name string) (bool, error)
-	GetByPK(id uuid.UUID) (*Participant, error)
-	GetRankedByPK(id uuid.UUID) (*RankedParticipant, error)
-	GetCount(leaderboardId uuid.UUID) (int, error)
-	List(leaderboardId uuid.UUID, limit int, offset int) ([]*RankedParticipant, error)
-	Create(participant *Participant) error
-	UpdateScore(participant *Participant) error
-	Delete(participant *Participant) error
+	Exists(ctx context.Context, name string) (bool, error)
+	GetByPK(ctx context.Context, id uuid.UUID) (*Participant, error)
+	GetRankedByPK(ctx context.Context, id uuid.UUID) (*RankedParticipant, error)
+	GetByExternalID(ctx context.Context, leaderboardId uuid.UUID, externalID string) (*Participant, error)
+	GetRankedByExternalID(ctx context.Context, leaderboardId uuid.UUID, externalID string) (*RankedParticipant, error)
+	GetCount(ctx context.Context, leaderboardId uuid.UUID) (int, error)
+	List(ctx context.Context, leaderboardId uuid.UUID, limit int, offset int) ([]*RankedParticipant, error)
+	Create(ctx context.Context, participant *Participant) error
+	UpdateScore(ctx context.Context, participant *Participant) error
+	Delete(ctx context.Context, participant *Participant) error
 }
 
 type DAL struct {
@@ -30,50 +33,81 @@ func NewDAL(db *pg.DB) *DAL {
 	}
 }
 
-func (d *DAL) Exists(name string) (bool, error) {
+func (d *DAL) Exists(ctx context.Context, name string) (bool, error) {
 	participant := &Participant{Name: name}
 	return d.db.Model(participant).
+		Context(ctx).
 		Where("name = ?", name).
 		Exists()
 }
 
-func (d *DAL) GetByPK(id uuid.UUID) (*Participant, error) {
+func (d *DAL) GetByPK(ctx context.Context, id uuid.UUID) (*Participant, error) {
 	participant := &Participant{ID: id}
 	err := d.db.Model(participant).
+		Context(ctx).
 		WherePK().
 		Select()
-	if err != nil {
-		return nil, err
-	}
-	return participant, nil
+	return participant, err
 }
 
-func (d *DAL) GetRankedByPK(id uuid.UUID) (*RankedParticipant, error) {
+func (d *DAL) GetRankedByPK(ctx context.Context, id uuid.UUID) (*RankedParticipant, error) {
 	participant := &RankedParticipant{Participant: &Participant{ID: id}}
 	err := d.db.Model(participant).
-		WherePK().
+		Context(ctx).
 		Column("*").
-		ColumnExpr("Row_number() OVER (PARTITION BY leaderboard_id ORDER BY score DESC) as rank").
+		ColumnExpr("ROW_NUMBER() OVER (PARTITION BY section_id ORDER BY score DESC) as rank").
+		Where("external_id = ?", id).
 		Select()
-	if err != nil {
-		return nil, err
-	}
-	return participant, nil
+	return participant, err
 }
 
-func (d *DAL) GetCount(leaderboardId uuid.UUID) (int, error) {
+func (d *DAL) GetByExternalID(ctx context.Context, leaderboardId uuid.UUID, externalID string) (*Participant, error) {
+	participant := &Participant{
+		LeaderboardID: leaderboardId,
+		ExternalID:    externalID,
+	}
+	err := d.db.Model(participant).
+		Context(ctx).
+		Where("external_id = ?", externalID).
+		Where("leaderboard_id = ?", leaderboardId).
+		Select()
+	return participant, err
+}
+
+func (d *DAL) GetRankedByExternalID(ctx context.Context, leaderboardId uuid.UUID, externalID string) (*RankedParticipant, error) {
+	participant := &RankedParticipant{
+		Participant: &Participant{
+			LeaderboardID: leaderboardId,
+			ExternalID:    externalID,
+		},
+	}
+
+	err := d.db.Model(participant).
+		Context(ctx).
+		Where("external_id = ?", externalID).
+		Where("leaderboard_id = ?", leaderboardId).
+		Column("*").
+		ColumnExpr("(SELECT COUNT(1) + 1 FROM participants pi WHERE pi.leaderboard_id = ? and pi.score > ? and pi.created_at < ?) as rank",
+			participant.LeaderboardID, participant.Score, participant.CreatedAt).
+		Select()
+	return participant, err
+}
+
+func (d *DAL) GetCount(ctx context.Context, leaderboardId uuid.UUID) (int, error) {
 	return d.db.Model((*Participant)(nil)).
+		Context(ctx).
 		Where("leaderboard_id = ?", leaderboardId).
 		Count()
 }
 
-func (d *DAL) List(leaderboardId uuid.UUID, limit int, offset int) ([]*RankedParticipant, error) {
+func (d *DAL) List(ctx context.Context, leaderboardId uuid.UUID, limit int, offset int) ([]*RankedParticipant, error) {
 	var participants []*RankedParticipant
 	err := d.db.Model(&participants).
+		Context(ctx).
 		Where("leaderboard_id = ?", leaderboardId).
 		Order("score DESC").
 		Column("*").
-		ColumnExpr("Row_number() OVER (PARTITION BY leaderboard_id ORDER BY score DESC) as rank").
+		ColumnExpr("ROW_NUMBER() OVER (PARTITION BY leaderboard_id ORDER BY score DESC) as rank").
 		Limit(limit).
 		Offset(offset).
 		Select()
@@ -83,19 +117,18 @@ func (d *DAL) List(leaderboardId uuid.UUID, limit int, offset int) ([]*RankedPar
 	return participants, nil
 }
 
-func (d *DAL) Create(participant *Participant) error {
+func (d *DAL) Create(ctx context.Context, participant *Participant) error {
 	_, err := d.db.Model(participant).
+		Context(ctx).
 		Set("created_at = now()").
 		Set("updated_at = now()").
 		Insert()
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
-func (d *DAL) UpdateScore(participant *Participant) error {
+func (d *DAL) UpdateScore(ctx context.Context, participant *Participant) error {
 	_, err := d.db.Model(participant).
+		Context(ctx).
 		WherePK().
 		Set("score = ?", participant.Score).
 		Set("updated_at = now()").
@@ -112,8 +145,9 @@ func (d *DAL) UpdateScore(participant *Participant) error {
 	return nil
 }
 
-func (d *DAL) Delete(participant *Participant) error {
+func (d *DAL) Delete(ctx context.Context, participant *Participant) error {
 	_, err := d.db.Model(participant).
+		Context(ctx).
 		WherePK().
 		Delete()
 	if err != nil {

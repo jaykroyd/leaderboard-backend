@@ -33,30 +33,37 @@ func (h *GetLeaderboardHandler) GetMethod() string {
 }
 
 func (h *GetLeaderboardHandler) GetPath() string {
-	return "/leaderboards/{id}"
+	return "/leaderboards/{leaderboard_id}"
 }
 
 func (h *GetLeaderboardHandler) Handle(logger app.Logger, r *http.Request) server.Response {
-	vars := mux.Vars(r)
-	leaderboardIdString := vars["id"]
+	logger.Info("getting leaderboard")
 
-	logger.WithFields(logging.Fields{
-		"request": leaderboardIdString,
-	}).Info("getting leaderboard")
+	var (
+		vars          = mux.Vars(r)
+		leaderboardId = vars["leaderboard_id"]
+	)
 
-	leaderboardId, err := uuid.Parse(leaderboardIdString)
+	logger = logger.WithFields(logging.Fields{
+		"leaderboard_id": leaderboardId,
+	})
+
+	leaderboardUUID, err := uuid.Parse(leaderboardId)
 	if err != nil {
 		logger.WithError(err).Error("failed to parse leaderboard id")
 		return NewBadRequest(errors.Wrap(err, "failed to parse leaderboard id"))
 	}
 
-	leaderboard, err := h.controller.Get(leaderboardId)
+	leaderboard, err := h.controller.Get(r.Context(), leaderboardUUID)
 	if err != nil {
 		logger.WithError(err).Error("failed to retrieve leaderboard")
 		return NewInternalServerError(err)
 	}
 
-	logger.WithFields(logging.Fields{"leaderboard": leaderboard}).Infof("successfully retrieved leaderboard")
+	logger.WithFields(logging.Fields{
+		"leaderboard": leaderboard,
+	}).Infof("successfully retrieved leaderboard")
+
 	return NewStatusOK(GetLeaderboardResponse{
 		Leaderboard: leaderboard,
 	})

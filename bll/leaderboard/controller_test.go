@@ -1,6 +1,7 @@
 package leaderboard_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -17,10 +18,12 @@ func TestCreate(t *testing.T) {
 	t.Parallel()
 
 	var (
+		ctx   context.Context
 		lbDal *mocks.MockLeaderboardDAL
 	)
 
 	setup := func(ctrl *gomock.Controller) {
+		ctx = context.Background()
 		lbDal = mocks.NewMockLeaderboardDAL(ctrl)
 	}
 
@@ -29,10 +32,10 @@ func TestCreate(t *testing.T) {
 		defer ctrl.Finish()
 		setup(ctrl)
 
-		lbDal.EXPECT().Create(gomock.Any()).Return(nil)
+		lbDal.EXPECT().Create(ctx, gomock.Any()).Return(nil)
 
 		service := leaderboard.NewController(lbDal)
-		_, err := service.Create("test", 10, leaderboard.LeaderboardModeHighscore)
+		_, err := service.Create(ctx, "test", 10, leaderboard.LeaderboardModeHighscore)
 		assert.Nil(t, err)
 	})
 }
@@ -41,10 +44,12 @@ func TestGet(t *testing.T) {
 	t.Parallel()
 
 	var (
+		ctx   context.Context
 		lbDal *mocks.MockLeaderboardDAL
 	)
 
 	setup := func(ctrl *gomock.Controller) {
+		ctx = context.Background()
 		lbDal = mocks.NewMockLeaderboardDAL(ctrl)
 	}
 
@@ -65,10 +70,10 @@ func TestGet(t *testing.T) {
 			}
 		)
 
-		lbDal.EXPECT().GetByPK(expected.ID).Return(expected, nil)
+		lbDal.EXPECT().GetByPK(ctx, expected.ID).Return(expected, nil)
 
 		service := leaderboard.NewController(lbDal)
-		lb, err := service.Get(expected.ID)
+		lb, err := service.Get(ctx, expected.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, expected, lb)
 	})
@@ -78,10 +83,12 @@ func TestList(t *testing.T) {
 	t.Parallel()
 
 	var (
+		ctx   context.Context
 		lbDal *mocks.MockLeaderboardDAL
 	)
 
 	setup := func(ctrl *gomock.Controller) {
+		ctx = context.Background()
 		lbDal = mocks.NewMockLeaderboardDAL(ctrl)
 	}
 
@@ -104,10 +111,10 @@ func TestList(t *testing.T) {
 			}
 		)
 
-		lbDal.EXPECT().List(10, 0).Return(expected, nil)
+		lbDal.EXPECT().List(ctx, 10, 0).Return(expected, nil)
 
 		service := leaderboard.NewController(lbDal)
-		lbs, err := service.List(10, 0)
+		lbs, err := service.List(ctx, 10, 0)
 		assert.Nil(t, err)
 		assert.Equal(t, expected, lbs)
 	})
@@ -117,10 +124,12 @@ func TestRemove(t *testing.T) {
 	t.Parallel()
 
 	var (
+		ctx   context.Context
 		lbDal *mocks.MockLeaderboardDAL
 	)
 
 	setup := func(ctrl *gomock.Controller) {
+		ctx = context.Background()
 		lbDal = mocks.NewMockLeaderboardDAL(ctrl)
 	}
 
@@ -135,11 +144,11 @@ func TestRemove(t *testing.T) {
 			}
 		)
 
-		lbDal.EXPECT().GetByPK(expected.ID).Return(expected, nil)
-		lbDal.EXPECT().Delete(expected).Return(nil)
+		lbDal.EXPECT().GetByPK(ctx, expected.ID).Return(expected, nil)
+		lbDal.EXPECT().Delete(ctx, expected).Return(nil)
 
 		service := leaderboard.NewController(lbDal)
-		err := service.Remove(expected.ID)
+		err := service.Remove(ctx, expected.ID)
 		assert.Nil(t, err)
 	})
 }

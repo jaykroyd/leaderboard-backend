@@ -42,14 +42,19 @@ func (h *CreateParticipantHandler) GetPath() string {
 }
 
 func (h *CreateParticipantHandler) Handle(logger app.Logger, r *http.Request) server.Response {
+	logger.Info("creating new participant")
+
 	req := CreateParticipantRequest{}
 	if err := h.decoder.DecodeRequest(r, &req); err != nil {
 		logger.WithError(err).Error("error decoding request")
 		return NewBadRequest(err)
 	}
 
-	logger.WithFields(logging.Fields{"request": req}).Info("creating new participant")
-	participant, err := h.controller.Create(req.LeaderboardID, req.ExternalID, req.Name, req.Metadata)
+	logger = logger.WithFields(logging.Fields{
+		"request": req,
+	})
+
+	participant, err := h.controller.Create(r.Context(), req.LeaderboardID, req.ExternalID, req.Name, req.Metadata)
 	if err != nil {
 		logger.WithError(err).Error("failed to create participant")
 		return NewInternalServerError(err)

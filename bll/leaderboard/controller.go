@@ -1,6 +1,8 @@
 package leaderboard
 
 import (
+	"context"
+
 	"github.com/byyjoww/leaderboard/dal/leaderboard"
 	"github.com/google/uuid"
 )
@@ -20,8 +22,8 @@ func NewController(dal leaderboard.LeaderboardDAL) *Controller {
 	}
 }
 
-func (c *Controller) Get(leaderboardId uuid.UUID) (*Leaderboard, error) {
-	model, err := c.dal.GetByPK(leaderboardId)
+func (c *Controller) Get(ctx context.Context, leaderboardId uuid.UUID) (*Leaderboard, error) {
+	model, err := c.dal.GetByPK(ctx, leaderboardId)
 	if err != nil {
 		return nil, err
 	}
@@ -29,8 +31,8 @@ func (c *Controller) Get(leaderboardId uuid.UUID) (*Leaderboard, error) {
 	return NewLeaderboard(model), nil
 }
 
-func (c *Controller) List(limit int, offset int) ([]*Leaderboard, error) {
-	models, err := c.dal.List(limit, offset)
+func (c *Controller) List(ctx context.Context, limit int, offset int) ([]*Leaderboard, error) {
+	models, err := c.dal.List(ctx, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +45,8 @@ func (c *Controller) List(limit int, offset int) ([]*Leaderboard, error) {
 	return leaderboards, nil
 }
 
-func (c *Controller) ListByMode(mode int, limit int, offset int) ([]*Leaderboard, error) {
-	models, err := c.dal.ListByMode(mode, limit, offset)
+func (c *Controller) ListByMode(ctx context.Context, mode int, limit int, offset int) ([]*Leaderboard, error) {
+	models, err := c.dal.ListByMode(ctx, mode, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -57,29 +59,29 @@ func (c *Controller) ListByMode(mode int, limit int, offset int) ([]*Leaderboard
 	return leaderboards, nil
 }
 
-func (c *Controller) Create(name string, capacity int, mode int) (*Leaderboard, error) {
+func (c *Controller) Create(ctx context.Context, name string, capacity int, mode int) (*Leaderboard, error) {
 	model := &leaderboard.Leaderboard{
 		Name:     name,
 		Mode:     mode,
 		Capacity: capacity,
 	}
 
-	if err := c.dal.Create(model); err != nil {
+	if err := c.dal.Create(ctx, model); err != nil {
 		return nil, err
 	}
 
 	return NewLeaderboard(model), nil
 }
 
-func (c *Controller) Remove(leaderboardId uuid.UUID) error {
-	model, err := c.dal.GetByPK(leaderboardId)
+func (c *Controller) Remove(ctx context.Context, leaderboardId uuid.UUID) error {
+	model, err := c.dal.GetByPK(ctx, leaderboardId)
 	if err != nil {
 		return err
 	}
 
-	return c.dal.Delete(model)
+	return c.dal.Delete(ctx, model)
 }
 
-func (c *Controller) Reset(leaderboardId uuid.UUID) error {
-	return c.dal.Reset(leaderboardId)
+func (c *Controller) Reset(ctx context.Context, leaderboardId uuid.UUID) error {
+	return c.dal.Reset(ctx, leaderboardId)
 }

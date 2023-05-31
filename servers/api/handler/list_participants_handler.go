@@ -41,6 +41,8 @@ func (h *ListParticipantsHandler) GetPath() string {
 }
 
 func (h *ListParticipantsHandler) Handle(logger app.Logger, r *http.Request) server.Response {
+	logger.Info("listing participants")
+
 	var (
 		vars          = mux.Vars(r)
 		leaderboardID = vars["leaderboard_id"]
@@ -58,12 +60,12 @@ func (h *ListParticipantsHandler) Handle(logger app.Logger, r *http.Request) ser
 		return NewBadRequest(err)
 	}
 
-	logger.WithFields(logging.Fields{
+	logger = logger.WithFields(logging.Fields{
 		"leaderboard_id": leaderboardUUID,
 		"request":        req,
-	}).Info("getting participants")
+	})
 
-	participants, err := h.controller.List(leaderboardUUID, req.Limit, req.Offset)
+	participants, err := h.controller.List(r.Context(), leaderboardUUID, req.Limit, req.Offset)
 	if err != nil {
 		logger.WithError(err).Error("failed to retrieve participants")
 		return NewInternalServerError(err)
@@ -71,6 +73,7 @@ func (h *ListParticipantsHandler) Handle(logger app.Logger, r *http.Request) ser
 
 	logger.WithFields(logging.Fields{
 		"participants": participants,
+		"amount":       len(participants),
 	}).Info("successfully retrieved participants")
 
 	return NewStatusOK(ListParticipantsResponse{

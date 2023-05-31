@@ -8,15 +8,13 @@ import (
 	app "github.com/byyjoww/leaderboard/services/http"
 	"github.com/byyjoww/leaderboard/services/http/server"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 )
 
 type RemoveLeaderboardHandler struct {
 	decoder    server.Decoder
 	controller leaderboard.LeaderboardController
-}
-
-type RemoveLeaderboardRequest struct {
-	LeaderboardID uuid.UUID `json:"leaderboard_id"`
 }
 
 func NewRemoveLeaderboardHandler(decoder server.Decoder, controller leaderboard.LeaderboardController) *RemoveLeaderboardHandler {
@@ -31,23 +29,33 @@ func (h *RemoveLeaderboardHandler) GetMethod() string {
 }
 
 func (h *RemoveLeaderboardHandler) GetPath() string {
-	return "/leaderboard"
+	return "/leaderboard/{leaderboard_id}"
 }
 
 func (h *RemoveLeaderboardHandler) Handle(logger app.Logger, r *http.Request) server.Response {
-	req := RemoveLeaderboardRequest{}
-	if err := h.decoder.DecodeRequest(r, &req); err != nil {
-		logger.WithError(err).Error("error decoding request")
-		return NewBadRequest(err)
+	logger.Info("deleting leaderboard")
+
+	var (
+		vars          = mux.Vars(r)
+		leaderboardID = vars["leaderboard_id"]
+	)
+
+	logger = logger.WithFields(logging.Fields{
+		"leaderboard_id": leaderboardID,
+	})
+
+	leaderboardUUID, err := uuid.Parse(leaderboardID)
+	if err != nil {
+		logger.WithError(err).Error("failed to parse leaderboard id")
+		return NewBadRequest(errors.Wrap(err, "failed to parse leaderboard id"))
 	}
 
-	logger.WithFields(logging.Fields{"request": req}).Info("deleting leaderboard")
-	err := h.controller.Remove(req.LeaderboardID)
+	err = h.controller.Remove(r.Context(), leaderboardUUID)
 	if err != nil {
 		logger.WithError(err).Error("failed to delete leaderboard")
 		return NewInternalServerError(err)
 	}
 
-	logger.WithFields(logging.Fields{"id": req.LeaderboardID}).Info("leaderboard deleted successfully")
+	logger.Info("leaderboard deleted successfully")
 	return NewStatusOK("OK")
 }

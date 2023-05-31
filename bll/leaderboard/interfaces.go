@@ -1,22 +1,24 @@
 package leaderboard
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 )
 
 type LeaderboardController interface {
 	Creator
 	Provider
-	Remove(leaderboardId uuid.UUID) error
-	Reset(leaderboardId uuid.UUID) error
+	Remove(ctx context.Context, leaderboardId uuid.UUID) error
+	Reset(ctx context.Context, leaderboardId uuid.UUID) error
 }
 
 type Creator interface {
-	Create(name string, capacity int, mode int) (*Leaderboard, error)
+	Create(ctx context.Context, name string, capacity int, mode int) (*Leaderboard, error)
 }
 
 type Provider interface {
-	List(limit int, offset int) ([]*Leaderboard, error)
-	ListByMode(mode int, limit int, offset int) ([]*Leaderboard, error)
-	Get(leaderboardId uuid.UUID) (*Leaderboard, error)
+	List(ctx context.Context, limit int, offset int) ([]*Leaderboard, error)
+	ListByMode(ctx context.Context, mode int, limit int, offset int) ([]*Leaderboard, error)
+	Get(ctx context.Context, leaderboardId uuid.UUID) (*Leaderboard, error)
 }

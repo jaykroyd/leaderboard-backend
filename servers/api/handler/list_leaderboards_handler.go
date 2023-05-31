@@ -40,20 +40,26 @@ func (h *ListLeaderboardHandler) GetPath() string {
 }
 
 func (h *ListLeaderboardHandler) Handle(logger app.Logger, r *http.Request) server.Response {
+	logger.Info("listing leaderboards")
+
 	req := ListLeaderboardsRequest{}
 	if err := h.decoder.DecodeRequest(r, &req); err != nil {
 		logger.WithError(err).Error("error decoding request")
 		return NewBadRequest(err)
 	}
 
+	logger = logger.WithFields(logging.Fields{
+		"request": req,
+	})
+
 	hasMode := r.URL.Query().Has("mode")
 	var leaderboards []*leaderboard.Leaderboard
 	var err error
 
 	if hasMode {
-		leaderboards, err = h.controller.ListByMode(req.Mode, req.Limit, req.Offset)
+		leaderboards, err = h.controller.ListByMode(r.Context(), req.Mode, req.Limit, req.Offset)
 	} else {
-		leaderboards, err = h.controller.List(req.Limit, req.Offset)
+		leaderboards, err = h.controller.List(r.Context(), req.Limit, req.Offset)
 	}
 
 	if err != nil {
@@ -61,7 +67,11 @@ func (h *ListLeaderboardHandler) Handle(logger app.Logger, r *http.Request) serv
 		return NewInternalServerError(err)
 	}
 
-	logger.WithFields(logging.Fields{"leaderboards": leaderboards, "amount": len(leaderboards)}).Info("successfully retrieved leaderboards")
+	logger.WithFields(logging.Fields{
+		"leaderboards": leaderboards,
+		"amount":       len(leaderboards)},
+	).Info("successfully retrieved leaderboards")
+
 	return NewStatusOK(ListLeaderboardsResponse{
 		Leaderboards: leaderboards,
 	})

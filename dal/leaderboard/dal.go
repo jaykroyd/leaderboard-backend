@@ -1,6 +1,8 @@
 package leaderboard
 
 import (
+	"context"
+
 	"github.com/byyjoww/leaderboard/constants"
 	"github.com/byyjoww/leaderboard/dal/participant"
 	"github.com/go-pg/pg"
@@ -9,12 +11,12 @@ import (
 )
 
 type LeaderboardDAL interface {
-	GetByPK(id uuid.UUID) (*Leaderboard, error)
-	List(limit int, offset int) ([]*Leaderboard, error)
-	ListByMode(mode int, limit int, offset int) ([]*Leaderboard, error)
-	Create(leaderboard *Leaderboard) error
-	Delete(leaderboard *Leaderboard) error
-	Reset(leaderboardId uuid.UUID) error
+	GetByPK(ctx context.Context, id uuid.UUID) (*Leaderboard, error)
+	List(ctx context.Context, limit int, offset int) ([]*Leaderboard, error)
+	ListByMode(ctx context.Context, mode int, limit int, offset int) ([]*Leaderboard, error)
+	Create(ctx context.Context, leaderboard *Leaderboard) error
+	Delete(ctx context.Context, leaderboard *Leaderboard) error
+	Reset(ctx context.Context, leaderboardId uuid.UUID) error
 }
 
 type DAL struct {
@@ -27,9 +29,10 @@ func NewDAL(db *pg.DB) *DAL {
 	}
 }
 
-func (d *DAL) GetByPK(id uuid.UUID) (*Leaderboard, error) {
+func (d *DAL) GetByPK(ctx context.Context, id uuid.UUID) (*Leaderboard, error) {
 	leaderboard := &Leaderboard{ID: id}
 	err := d.db.Model(leaderboard).
+		Context(ctx).
 		WherePK().
 		Select()
 	if err != nil {
@@ -38,9 +41,10 @@ func (d *DAL) GetByPK(id uuid.UUID) (*Leaderboard, error) {
 	return leaderboard, nil
 }
 
-func (d *DAL) List(limit int, offset int) ([]*Leaderboard, error) {
+func (d *DAL) List(ctx context.Context, limit int, offset int) ([]*Leaderboard, error) {
 	var leaderboards []*Leaderboard
 	err := d.db.Model(&leaderboards).
+		Context(ctx).
 		Limit(limit).
 		Offset(offset).
 		Select()
@@ -50,9 +54,10 @@ func (d *DAL) List(limit int, offset int) ([]*Leaderboard, error) {
 	return leaderboards, nil
 }
 
-func (d *DAL) ListByMode(mode int, limit int, offset int) ([]*Leaderboard, error) {
+func (d *DAL) ListByMode(ctx context.Context, mode int, limit int, offset int) ([]*Leaderboard, error) {
 	var leaderboards []*Leaderboard
 	err := d.db.Model(&leaderboards).
+		Context(ctx).
 		Where("mode = ?", mode).
 		Limit(limit).
 		Offset(offset).
@@ -63,8 +68,9 @@ func (d *DAL) ListByMode(mode int, limit int, offset int) ([]*Leaderboard, error
 	return leaderboards, nil
 }
 
-func (d *DAL) Create(leaderboard *Leaderboard) error {
+func (d *DAL) Create(ctx context.Context, leaderboard *Leaderboard) error {
 	_, err := d.db.Model(leaderboard).
+		Context(ctx).
 		Set("created_at = now()").
 		Set("updated_at = now()").
 		Insert()
@@ -74,11 +80,12 @@ func (d *DAL) Create(leaderboard *Leaderboard) error {
 	return nil
 }
 
-func (d *DAL) Delete(leaderboard *Leaderboard) error {
+func (d *DAL) Delete(ctx context.Context, leaderboard *Leaderboard) error {
 	return d.db.RunInTransaction(func(tx *pg.Tx) error {
 		// List all participants in the leaderboard
 		participants := []*participant.Participant{}
 		err := tx.Model(&participants).
+			Context(ctx).
 			Where("leaderboard_id = ?", leaderboard.ID).
 			Select()
 		if err != nil && err != pg.ErrNoRows {
@@ -97,6 +104,7 @@ func (d *DAL) Delete(leaderboard *Leaderboard) error {
 
 		// Delete the leaderboard
 		_, err = tx.Model(leaderboard).
+			Context(ctx).
 			WherePK().
 			Delete()
 		if err != nil {
@@ -110,10 +118,11 @@ func (d *DAL) Delete(leaderboard *Leaderboard) error {
 	})
 }
 
-func (d *DAL) Reset(leaderboardId uuid.UUID) error {
+func (d *DAL) Reset(ctx context.Context, leaderboardId uuid.UUID) error {
 	// List all participants in the leaderboard
 	participants := []*participant.Participant{}
 	err := d.db.Model(&participants).
+		Context(ctx).
 		Where("leaderboard_id = ?", leaderboardId).
 		Select()
 	if err != nil && err != pg.ErrNoRows {

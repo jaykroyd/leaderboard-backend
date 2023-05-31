@@ -1,6 +1,7 @@
 package participant_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -32,8 +33,10 @@ func TestGet(t *testing.T) {
 		setup(ctrl)
 
 		var (
+			ctx      = context.Background()
 			expected = &participantDal.Participant{
 				ID:            uuid.New(),
+				ExternalID:    uuid.NewString(),
 				LeaderboardID: uuid.New(),
 				Score:         0,
 				CreatedAt:     types.NullTime{Time: time.Now().UTC()},
@@ -41,10 +44,10 @@ func TestGet(t *testing.T) {
 			}
 		)
 
-		pDal.EXPECT().GetByPK(expected.ID).Return(expected, nil)
+		pDal.EXPECT().GetByPK(ctx, expected.ID).Return(expected, nil)
 
 		service := participant.NewController(pDal, lbDal)
-		lb, err := service.Get(expected.ID)
+		lb, err := service.Get(ctx, expected.LeaderboardID, expected.ExternalID)
 		assert.Nil(t, err)
 		assert.Equal(t, expected, lb)
 	})
@@ -69,6 +72,7 @@ func TestList(t *testing.T) {
 		setup(ctrl)
 
 		var (
+			ctx           = context.Background()
 			leaderboardId = uuid.New()
 			expected      = []*participantDal.Participant{
 				{
@@ -81,10 +85,10 @@ func TestList(t *testing.T) {
 			}
 		)
 
-		pDal.EXPECT().List(leaderboardId, 10, 0).Return(expected, nil)
+		pDal.EXPECT().List(ctx, leaderboardId, 10, 0).Return(expected, nil)
 
 		service := participant.NewController(pDal, lbDal)
-		lb, err := service.List(leaderboardId, 10, 0)
+		lb, err := service.List(ctx, leaderboardId, 10, 0)
 		assert.Nil(t, err)
 		assert.Equal(t, expected, lb)
 	})
@@ -109,6 +113,7 @@ func TestUpdateScore(t *testing.T) {
 		setup(ctrl)
 
 		var (
+			ctx      = context.Background()
 			amounts  = []int{10, 561, -1968, -1}
 			expected = []int{1010, 1561, 0, 999}
 		)
@@ -116,17 +121,18 @@ func TestUpdateScore(t *testing.T) {
 		for i, a := range amounts {
 			p := &participantDal.Participant{
 				ID:            uuid.New(),
+				ExternalID:    uuid.NewString(),
 				LeaderboardID: uuid.New(),
 				Score:         1000,
 				CreatedAt:     types.NullTime{Time: time.Now().UTC()},
 				UpdatedAt:     types.NullTime{Time: time.Now().UTC()},
 			}
 
-			pDal.EXPECT().GetByPK(p.ID).Return(p, nil)
-			pDal.EXPECT().UpdateScore(p).Return(nil)
+			pDal.EXPECT().GetByPK(ctx, p.ID).Return(p, nil)
+			pDal.EXPECT().UpdateScore(ctx, p).Return(nil)
 
 			service := participant.NewController(pDal, lbDal)
-			after, err := service.UpdateScore(p.ID, a)
+			after, err := service.UpdateScore(ctx, p.LeaderboardID, p.ExternalID, a)
 			assert.Nil(t, err)
 			assert.Equal(t, expected[i], after)
 		}
@@ -152,16 +158,17 @@ func TestCreate(t *testing.T) {
 		setup(ctrl)
 
 		var (
+			ctx      = context.Background()
 			expected = &participantDal.Participant{
 				LeaderboardID: uuid.New(),
 				Score:         0,
 			}
 		)
 
-		pDal.EXPECT().Create(gomock.Any()).Return(nil)
+		pDal.EXPECT().Create(ctx, gomock.Any()).Return(nil)
 
 		service := participant.NewController(pDal, lbDal)
-		participant, err := service.Create(expected.LeaderboardID, "123", "test", map[string]string{})
+		participant, err := service.Create(ctx, expected.LeaderboardID, "123", "test", map[string]string{})
 		assert.Nil(t, err)
 		assert.Equal(t, expected, participant)
 	})
@@ -186,16 +193,18 @@ func TestRemove(t *testing.T) {
 		setup(ctrl)
 
 		var (
+			ctx      = context.Background()
 			expected = &participantDal.Participant{
-				ID: uuid.New(),
+				ID:         uuid.New(),
+				ExternalID: uuid.NewString(),
 			}
 		)
 
-		pDal.EXPECT().GetByPK(expected.ID).Return(expected, nil)
-		pDal.EXPECT().Delete(expected).Return(nil)
+		pDal.EXPECT().GetByPK(ctx, expected.ID).Return(expected, nil)
+		pDal.EXPECT().Delete(ctx, expected).Return(nil)
 
 		service := participant.NewController(pDal, lbDal)
-		err := service.Remove(expected.ID)
+		err := service.Remove(ctx, expected.LeaderboardID, expected.ExternalID)
 		assert.Nil(t, err)
 	})
 }

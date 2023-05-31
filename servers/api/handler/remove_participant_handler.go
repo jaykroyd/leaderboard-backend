@@ -9,6 +9,7 @@ import (
 	"github.com/byyjoww/leaderboard/services/http/server"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 )
 
 type RemoveParticipantHandler struct {
@@ -28,22 +29,30 @@ func (h *RemoveParticipantHandler) GetMethod() string {
 }
 
 func (h *RemoveParticipantHandler) GetPath() string {
-	return "/leaderboards/{leaderboard_id}/participants/{participant_id}"
+	return "/leaderboards/{leaderboard_id}/participants/{external_id}"
 }
 
 func (h *RemoveParticipantHandler) Handle(logger app.Logger, r *http.Request) server.Response {
+	logger.Info("deleting participant")
+
 	var (
 		vars          = mux.Vars(r)
 		leaderboardID = vars["leaderboard_id"]
-		participantID = vars["participant_id"]
+		externalID    = vars["external_id"]
 	)
 
-	logger.WithFields(logging.Fields{
+	logger = logger.WithFields(logging.Fields{
 		"leaderboard_id": leaderboardID,
-		"participant_id": participantID,
-	}).Info("deleting participant")
+		"external_id":    externalID,
+	})
 
-	err := h.controller.Remove(uuid.MustParse(participantID))
+	leaderboardUUID, err := uuid.Parse(leaderboardID)
+	if err != nil {
+		logger.WithError(err).Error("failed to parse leaderboard id")
+		return NewBadRequest(errors.Wrap(err, "failed to parse leaderboard id"))
+	}
+
+	err = h.controller.Remove(r.Context(), leaderboardUUID, externalID)
 	if err != nil {
 		logger.WithError(err).Error("failed to delete participant")
 		return NewInternalServerError(err)

@@ -1,21 +1,22 @@
 package participant
 
 import (
+	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/byyjoww/leaderboard/dal/leaderboard"
 	"github.com/byyjoww/leaderboard/dal/participant"
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 )
 
 type ParticipantController interface {
-	Get(participantID uuid.UUID) (*RankedParticipant, error)
-	List(leaderboardId uuid.UUID, limit int, offset int) ([]*RankedParticipant, error)
-	UpdateScore(participantID uuid.UUID, amount int) (int, error)
-	Create(leaderboardId uuid.UUID, externalId string, name string, metadata map[string]string) (*Participant, error)
-	Remove(participantID uuid.UUID) error
+	Get(ctx context.Context, leaderboardId uuid.UUID, externalId string) (*RankedParticipant, error)
+	List(ctx context.Context, leaderboardId uuid.UUID, limit int, offset int) ([]*RankedParticipant, error)
+	UpdateScore(ctx context.Context, leaderboardId uuid.UUID, externalId string, score int) (*RankedParticipant, error)
+	Create(ctx context.Context, leaderboardId uuid.UUID, externalId string, name string, metadata map[string]string) (*Participant, error)
+	Remove(ctx context.Context, leaderboardId uuid.UUID, externalId string) error
 }
 
 type Controller struct {
@@ -30,8 +31,8 @@ func NewController(dal participant.ParticipantDAL, lbDal leaderboard.Leaderboard
 	}
 }
 
-func (c *Controller) Get(participantID uuid.UUID) (*RankedParticipant, error) {
-	model, err := c.dal.GetRankedByPK(participantID)
+func (c *Controller) Get(ctx context.Context, leaderboardId uuid.UUID, externalId string) (*RankedParticipant, error) {
+	model, err := c.dal.GetRankedByExternalID(ctx, leaderboardId, externalId)
 	if err != nil {
 		return nil, err
 	}
@@ -39,8 +40,8 @@ func (c *Controller) Get(participantID uuid.UUID) (*RankedParticipant, error) {
 	return NewRankedParticipant(model), nil
 }
 
-func (c *Controller) List(leaderboardId uuid.UUID, limit int, offset int) ([]*RankedParticipant, error) {
-	models, err := c.dal.List(leaderboardId, limit, offset)
+func (c *Controller) List(ctx context.Context, leaderboardId uuid.UUID, limit int, offset int) ([]*RankedParticipant, error) {
+	models, err := c.dal.List(ctx, leaderboardId, limit, offset)
 	if err != nil {
 		return []*RankedParticipant{}, err
 	}
@@ -57,33 +58,36 @@ func (c *Controller) List(leaderboardId uuid.UUID, limit int, offset int) ([]*Ra
 	return participants, nil
 }
 
-func (c *Controller) UpdateScore(participantID uuid.UUID, amount int) (int, error) {
-	model, err := c.dal.GetByPK(participantID)
+func (c *Controller) UpdateScore(ctx context.Context, leaderboardId uuid.UUID, externalId string, score int) (*RankedParticipant, error) {
+	model, err := c.dal.GetByExternalID(ctx, leaderboardId, externalId)
 	if err != nil {
-		return 0, nil
+		return nil, errors.Wrap(err, "failed to get participant from dal")
 	}
 
-	prev := model.Score
-	model.Score += amount
+	model.Score += score
 	if model.Score < 0 {
 		model.Score = 0
 	}
 
-	err = c.dal.UpdateScore(model)
-	if err != nil {
-		return prev, err
+	if err = c.dal.UpdateScore(ctx, model); err != nil {
+		return nil, errors.Wrap(err, "failed to update score in dal")
 	}
 
-	return model.Score, nil
+	rModel, err := c.dal.GetRankedByPK(ctx, model.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get final ranked participant from dal")
+	}
+
+	return NewRankedParticipant(rModel), nil
 }
 
-func (c *Controller) Create(leaderboardId uuid.UUID, externalId string, name string, metadata map[string]string) (*Participant, error) {
-	lb, err := c.lbDal.GetByPK(leaderboardId)
+func (c *Controller) Create(ctx context.Context, leaderboardId uuid.UUID, externalId string, name string, metadata map[string]string) (*Participant, error) {
+	lb, err := c.lbDal.GetByPK(ctx, leaderboardId)
 	if err != nil {
 		return nil, err
 	}
 
-	amount, err := c.dal.GetCount(leaderboardId)
+	amount, err := c.dal.GetCount(ctx, leaderboardId)
 	if err != nil {
 		return nil, err
 	}
@@ -109,20 +113,20 @@ func (c *Controller) Create(leaderboardId uuid.UUID, externalId string, name str
 		Score:         0,
 	}
 
-	if err := c.dal.Create(model); err != nil {
+	if err := c.dal.Create(ctx, model); err != nil {
 		return nil, err
 	}
 
 	return NewParticipant(model), nil
 }
 
-func (c *Controller) Remove(participantID uuid.UUID) error {
-	model, err := c.dal.GetByPK(participantID)
+func (c *Controller) Remove(ctx context.Context, leaderboardId uuid.UUID, externalId string) error {
+	model, err := c.dal.GetByExternalID(ctx, leaderboardId, externalId)
 	if err != nil {
 		return err
 	}
 
-	return c.dal.Delete(model)
+	return c.dal.Delete(ctx, model)
 }
 
 func (c *Controller) validateName(name string) error {

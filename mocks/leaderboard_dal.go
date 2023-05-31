@@ -5,6 +5,7 @@
 package mocks
 
 import (
+	context "context"
 	reflect "reflect"
 
 	leaderboard "github.com/byyjoww/leaderboard/dal/leaderboard"
@@ -36,88 +37,88 @@ func (m *MockLeaderboardDAL) EXPECT() *MockLeaderboardDALMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockLeaderboardDAL) Create(leaderboard *leaderboard.Leaderboard) error {
+func (m *MockLeaderboardDAL) Create(ctx context.Context, leaderboard *leaderboard.Leaderboard) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", leaderboard)
+	ret := m.ctrl.Call(m, "Create", ctx, leaderboard)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockLeaderboardDALMockRecorder) Create(leaderboard interface{}) *gomock.Call {
+func (mr *MockLeaderboardDALMockRecorder) Create(ctx, leaderboard interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockLeaderboardDAL)(nil).Create), leaderboard)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockLeaderboardDAL)(nil).Create), ctx, leaderboard)
 }
 
 // Delete mocks base method.
-func (m *MockLeaderboardDAL) Delete(leaderboard *leaderboard.Leaderboard) error {
+func (m *MockLeaderboardDAL) Delete(ctx context.Context, leaderboard *leaderboard.Leaderboard) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", leaderboard)
+	ret := m.ctrl.Call(m, "Delete", ctx, leaderboard)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockLeaderboardDALMockRecorder) Delete(leaderboard interface{}) *gomock.Call {
+func (mr *MockLeaderboardDALMockRecorder) Delete(ctx, leaderboard interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockLeaderboardDAL)(nil).Delete), leaderboard)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockLeaderboardDAL)(nil).Delete), ctx, leaderboard)
 }
 
 // GetByPK mocks base method.
-func (m *MockLeaderboardDAL) GetByPK(id uuid.UUID) (*leaderboard.Leaderboard, error) {
+func (m *MockLeaderboardDAL) GetByPK(ctx context.Context, id uuid.UUID) (*leaderboard.Leaderboard, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByPK", id)
+	ret := m.ctrl.Call(m, "GetByPK", ctx, id)
 	ret0, _ := ret[0].(*leaderboard.Leaderboard)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetByPK indicates an expected call of GetByPK.
-func (mr *MockLeaderboardDALMockRecorder) GetByPK(id interface{}) *gomock.Call {
+func (mr *MockLeaderboardDALMockRecorder) GetByPK(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByPK", reflect.TypeOf((*MockLeaderboardDAL)(nil).GetByPK), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByPK", reflect.TypeOf((*MockLeaderboardDAL)(nil).GetByPK), ctx, id)
 }
 
 // List mocks base method.
-func (m *MockLeaderboardDAL) List(limit, offset int) ([]*leaderboard.Leaderboard, error) {
+func (m *MockLeaderboardDAL) List(ctx context.Context, limit, offset int) ([]*leaderboard.Leaderboard, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", limit, offset)
+	ret := m.ctrl.Call(m, "List", ctx, limit, offset)
 	ret0, _ := ret[0].([]*leaderboard.Leaderboard)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // List indicates an expected call of List.
-func (mr *MockLeaderboardDALMockRecorder) List(limit, offset interface{}) *gomock.Call {
+func (mr *MockLeaderboardDALMockRecorder) List(ctx, limit, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLeaderboardDAL)(nil).List), limit, offset)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockLeaderboardDAL)(nil).List), ctx, limit, offset)
 }
 
 // ListByMode mocks base method.
-func (m *MockLeaderboardDAL) ListByMode(mode, limit, offset int) ([]*leaderboard.Leaderboard, error) {
+func (m *MockLeaderboardDAL) ListByMode(ctx context.Context, mode, limit, offset int) ([]*leaderboard.Leaderboard, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListByMode", mode, limit, offset)
+	ret := m.ctrl.Call(m, "ListByMode", ctx, mode, limit, offset)
 	ret0, _ := ret[0].([]*leaderboard.Leaderboard)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListByMode indicates an expected call of ListByMode.
-func (mr *MockLeaderboardDALMockRecorder) ListByMode(mode, limit, offset interface{}) *gomock.Call {
+func (mr *MockLeaderboardDALMockRecorder) ListByMode(ctx, mode, limit, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByMode", reflect.TypeOf((*MockLeaderboardDAL)(nil).ListByMode), mode, limit, offset)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByMode", reflect.TypeOf((*MockLeaderboardDAL)(nil).ListByMode), ctx, mode, limit, offset)
 }
 
 // Reset mocks base method.
-func (m *MockLeaderboardDAL) Reset(leaderboardId uuid.UUID) error {
+func (m *MockLeaderboardDAL) Reset(ctx context.Context, leaderboardId uuid.UUID) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Reset", leaderboardId)
+	ret := m.ctrl.Call(m, "Reset", ctx, leaderboardId)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Reset indicates an expected call of Reset.
-func (mr *MockLeaderboardDALMockRecorder) Reset(leaderboardId interface{}) *gomock.Call {
+func (mr *MockLeaderboardDALMockRecorder) Reset(ctx, leaderboardId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Reset", reflect.TypeOf((*MockLeaderboardDAL)(nil).Reset), leaderboardId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Reset", reflect.TypeOf((*MockLeaderboardDAL)(nil).Reset), ctx, leaderboardId)
 }

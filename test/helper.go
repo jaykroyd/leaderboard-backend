@@ -11,7 +11,7 @@ func GetTestDalFactory() dal.Factory {
 		User:              config.Postgres.User,
 		Pass:              config.Postgres.Pass,
 		Host:              config.Postgres.Host,
-		Port:              config.Postgres.Port,
+		Port:              "9050",
 		Database:          config.Postgres.Database,
 		PoolSize:          config.Postgres.PoolSize,
 		MaxRetries:        config.Postgres.MaxRetries,
